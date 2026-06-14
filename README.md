@@ -6,7 +6,9 @@ Worldkeep is a **local-first MCP server** that stores the state of a fictional w
 
 ## Status
 
-**Planning phase** (`v0.0.0`) — no application code yet. See [docs/planning/](./docs/planning/).
+**Planning phase** (`v0.0.0`) — no application code yet. **Start here:** [HANDOFF.md](./HANDOFF.md)
+
+See [docs/planning/](./docs/planning/) for strategy docs.
 
 ## Quick concept
 

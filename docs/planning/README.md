@@ -14,5 +14,6 @@ Planning artifacts for Worldkeep live here.
 | [issue-pr-workflow.md](./issue-pr-workflow.md) | Issue/PR templates |
 | [prototype-release-backlog.md](./prototype-release-backlog.md) | GitHub release epic index |
 | [github-setup.md](./github-setup.md) | Repo bootstrap notes |
+| [HANDOFF.md](../../HANDOFF.md) | **Session entry point** — current state + next steps |
 
-Do not put planning drafts in the repo root. User-facing docs belong in [README.md](../../README.md).
+Do not put planning drafts in the repo root except `HANDOFF.md`. User-facing docs belong in [README.md](../../README.md).

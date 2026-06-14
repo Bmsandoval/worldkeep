@@ -2,6 +2,8 @@
 
 **Repo:** `Bmsandoval/worldkeep` · **Integration branch:** `develop`
 
+**Session handoff:** [HANDOFF.md](./HANDOFF.md) — read first on every new session.
+
 ---
 
 ## Development workflow (required)
