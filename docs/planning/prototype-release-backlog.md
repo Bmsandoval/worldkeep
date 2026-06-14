@@ -8,10 +8,12 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 
 **Theme:** Vision, full roadmap, scenario bootstrap design, AGENTS, issues.
 
+**Parent:** [#3](https://github.com/Bmsandoval/worldkeep/issues/3)
+
 | # | Sub-issue | Status |
 |---|-----------|--------|
-| TBD | Planning docs and AGENTS.md | open |
-| TBD | GitHub milestones, labels, release structure | open |
+| [#1](https://github.com/Bmsandoval/worldkeep/issues/1) | Planning docs, AGENTS.md, and full expansion roadmap | done (this commit) |
+| [#2](https://github.com/Bmsandoval/worldkeep/issues/2) | GitHub milestones, labels, and release issue structure | done |
 
 **Tag:** `v0.0.0`
 
@@ -21,14 +23,16 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 
 **Theme:** stdio MCP, schema, `start_campaign`, core tools, tests.
 
-| Sub-issue | Scope |
-|-----------|--------|
-| Go module + SQLite migrations | Schema from [mcp-tools-design.md](./mcp-tools-design.md) |
-| stdio MCP skeleton + server instructions | initialize, tools/list |
-| Campaign tools | `start_campaign`, `load_campaign`, `list_campaigns` |
-| Read tools | `get_scene_context`, `get_location`, `get_entity`, `search_world`, `get_player_state` |
-| Write tools | `move_to`, `upsert_location`, `upsert_entity`, `record_event`, `add_lore`, `update_player_state` |
-| Integration test | Premise → move → entity → search round-trip |
+**Parent:** [#10](https://github.com/Bmsandoval/worldkeep/issues/10)
+
+| # | Sub-issue |
+|---|-----------|
+| [#4](https://github.com/Bmsandoval/worldkeep/issues/4) | Go module, SQLite schema, and migrations |
+| [#5](https://github.com/Bmsandoval/worldkeep/issues/5) | stdio MCP server with server instructions |
+| [#6](https://github.com/Bmsandoval/worldkeep/issues/6) | Campaign lifecycle tools |
+| [#7](https://github.com/Bmsandoval/worldkeep/issues/7) | Read tools |
+| [#8](https://github.com/Bmsandoval/worldkeep/issues/8) | Write tools |
+| [#9](https://github.com/Bmsandoval/worldkeep/issues/9) | Integration test: premise to search round-trip |
 
 **Tag:** `v0.1.0`
 
@@ -38,12 +42,13 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 
 **Theme:** Streamable HTTP, tunnel script, ChatGPT smoke path.
 
-| Sub-issue | Scope |
-|-----------|--------|
-| HTTP transport | `POST /mcp`, `/healthz` |
-| Tunnel script + docs | cloudflared; ngrok notes |
-| Tool annotations | ChatGPT hints |
-| Smoke test guide | MCP Inspector + ChatGPT setup checklist |
+**Parent:** [#14](https://github.com/Bmsandoval/worldkeep/issues/14)
+
+| # | Sub-issue |
+|---|-----------|
+| [#11](https://github.com/Bmsandoval/worldkeep/issues/11) | Streamable HTTP transport |
+| [#12](https://github.com/Bmsandoval/worldkeep/issues/12) | Tunnel script and ChatGPT setup docs |
+| [#13](https://github.com/Bmsandoval/worldkeep/issues/13) | Tool annotations for ChatGPT |
 
 **Tag:** `v0.2.0`
 
@@ -53,12 +58,13 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 
 **Theme:** Scenario template packs, map tool, export.
 
-| Sub-issue | Scope |
-|-----------|--------|
-| Template packs | `blank`, `journey`, `mystery`, `salvage` seeds |
-| `get_map` + `connect_locations` | Discovered graph |
-| `export_campaign` / `import_campaign` | JSON backup |
-| FTS tuning | Tag boosts, premise in search index |
+**Parent:** [#18](https://github.com/Bmsandoval/worldkeep/issues/18)
+
+| # | Sub-issue |
+|---|-----------|
+| [#15](https://github.com/Bmsandoval/worldkeep/issues/15) | Scenario template packs |
+| [#16](https://github.com/Bmsandoval/worldkeep/issues/16) | get_map and connect_locations |
+| [#17](https://github.com/Bmsandoval/worldkeep/issues/17) | export_campaign and import_campaign JSON |
 
 **Tag:** `v0.3.0`
 
@@ -68,12 +74,13 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 
 **Theme:** Multi-session playtest fixes.
 
-| Sub-issue | Scope |
-|-----------|--------|
-| `summarize_session` | Session digest lore |
-| `check_contradiction` | Warning-only conflict hints |
-| Provenance on writes | `source` field enforcement |
-| Playtest doc | Real ChatGPT campaign notes |
+**Parent:** [#22](https://github.com/Bmsandoval/worldkeep/issues/22)
+
+| # | Sub-issue |
+|---|-----------|
+| [#19](https://github.com/Bmsandoval/worldkeep/issues/19) | summarize_session and check_contradiction |
+| [#20](https://github.com/Bmsandoval/worldkeep/issues/20) | Provenance source field on writes |
+| [#21](https://github.com/Bmsandoval/worldkeep/issues/21) | Multi-session ChatGPT playtest notes doc |
 
 **Tag:** `v0.4.0`
 
@@ -82,5 +89,3 @@ Index of **GitHub release epics** for Worldkeep. Parent issues hold sub-issue ch
 ## MVP (future — v1.x)
 
 Not filed until prototype `v0.4.0` criteria met. See [full-expansion-roadmap.md](./full-expansion-roadmap.md) §5 Web companion app.
-
-Update issue numbers in this file after running `scripts/create_github_issues.py`.
