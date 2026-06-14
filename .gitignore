@@ -1,0 +1,18 @@
+# Local campaign databases and secrets
+data/*.sqlite
+data/*.sqlite-*
+local.env
+
+# Go
+/bin/
+/dist/
+*.exe
+*.test
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Tunnel logs
+.tunnel/
