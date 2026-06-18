@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "worldkeep": {
+      "command": "go",
+      "args": ["run", "./cmd/worldkeep-mcp"],
+      "cwd": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/mcp",
+      "env": {
+        "WORLDKEEP_DATA_DIR": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/data"
+      }
+    }
+  }
+}
