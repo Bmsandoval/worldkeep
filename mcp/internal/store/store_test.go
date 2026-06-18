@@ -41,7 +41,7 @@ func TestMigrateAndSeedBlackport(t *testing.T) {
 		t.Fatalf("finn type = %q", finn.Type)
 	}
 
-	entities, facts, err := s.SearchWorld(ctx, seed.DemoCampaignID, "Crimson", 10)
+	entities, facts, err := s.SearchWorld(ctx, seed.DemoCampaignID, "Crimson", 10, store.ScopeParty)
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}
@@ -60,7 +60,7 @@ func TestMigrateAndSeedBlackport(t *testing.T) {
 		t.Fatalf("rulings = %d, want 1", len(rulings))
 	}
 
-	plots, err := s.ListActivePlots(ctx, seed.DemoCampaignID)
+	plots, err := s.ListActivePlots(ctx, seed.DemoCampaignID, store.ScopeParty)
 	if err != nil {
 		t.Fatalf("list plots: %v", err)
 	}

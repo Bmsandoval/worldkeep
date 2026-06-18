@@ -25,6 +25,14 @@ text() { jq -r '.result.content[0].text // empty'; }
 
 echo "=== stdio MCP playtest (fresh Blackport seed) ==="
 
+R0=$(mcp_call 0 prepare_session_brief '{}')
+echo "$R0" | text | jq -e '(.active_plots | length) > 0 and (.campaign.name | length) > 0' >/dev/null
+echo "PASS prepare_session_brief — session prep"
+
+R0b=$(mcp_call 0 get_campaign_dashboard '{}')
+echo "$R0b" | text | jq -e '.pending_update_count >= 0' >/dev/null
+echo "PASS get_campaign_dashboard"
+
 R1=$(mcp_call 1 compile_scene_context '{"prompt":"Prepare for tonight'\''s session. The party is returning to Blackport."}')
 echo "$R1" | text | jq -e '(.plots | length) > 0 and (.actors | length) > 0 and (.locations | length) > 0' >/dev/null
 echo "PASS prompt 1 — scene context"

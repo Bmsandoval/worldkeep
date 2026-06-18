@@ -86,5 +86,19 @@ func Blackport(ctx context.Context, s *store.Store) error {
 		return err
 	}
 
+	if err := s.UpsertEntity(ctx, store.Entity{
+		ID: "secret_prince_alive", CampaignID: DemoCampaignID, Type: "secret",
+		Name: "Prince still alive", Summary: "The missing prince is alive, hidden in a Crimson Guild warehouse.",
+		Data: json.RawMessage(`{"visibility":"dm_only"}`),
+	}); err != nil {
+		return err
+	}
+	if err := s.AddFact(ctx, store.Fact{
+		ID: "fact_prince_alive_dm", CampaignID: DemoCampaignID,
+		Text: "The prince is alive and imprisoned beneath the docks.", Visibility: "dm_only", Confidence: "high",
+	}); err != nil {
+		return err
+	}
+
 	return nil
 }

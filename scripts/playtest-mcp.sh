@@ -31,8 +31,13 @@ curl -sS "http://127.0.0.1:8788/healthz"
 echo
 
 section "Campaign dashboard (session prep)"
-call get_campaign_dashboard '{}' \
+call prepare_session_brief '{}' \
   | jq -r '.result.content[0].text' | jq '{campaign: .campaign.name, plots: [.active_plots[]?.name], pending: .pending_update_count}'
+
+section "Party scope — no secret leakage"
+call compile_scene_context '{"prompt":"Prepare session about the prince in Blackport","scope":"party"}' \
+  | jq -r '.result.content[0].text' | jq -e 'tostring | (contains("Prince still alive") | not) and (contains("imprisoned beneath") | not)' >/dev/null
+echo "PASS party scope hides dm secrets"
 
 section "Initialize"
 rpc initialize '{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"playtest","version":"1.0"}}' \

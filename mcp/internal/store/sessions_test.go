@@ -26,7 +26,7 @@ func TestSessionLifecycle(t *testing.T) {
 	if err != nil || open.ID != sess.ID {
 		t.Fatalf("open session: %v", err)
 	}
-	closed, err := s.EndSession(ctx, sess.ID)
+	closed, err := s.EndSession(ctx, sess.ID, "")
 	if err != nil || closed.Status != "closed" || closed.EndedAt == nil {
 		t.Fatalf("end: %+v err=%v", closed, err)
 	}

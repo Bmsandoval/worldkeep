@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	DataDir string
+	Role    string
 }
 
 func Load() (Config, error) {
@@ -19,7 +20,11 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, fmt.Errorf("data dir: %w", err)
 	}
-	return Config{DataDir: abs}, nil
+	role := os.Getenv("WORLDKEEP_ROLE")
+	if role == "" {
+		role = "dm"
+	}
+	return Config{DataDir: abs, Role: role}, nil
 }
 
 func (c Config) DBPath(campaignID string) string {

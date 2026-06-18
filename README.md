@@ -6,7 +6,7 @@ WorldKeep is a continuity layer between AI and long-running campaigns. It stores
 
 ## Status
 
-**POC code complete** — planning docs in [docs/](./docs/), implementation through v0.6.0 on `develop`.
+**POC + MVP code complete** — planning docs in [docs/](./docs/), implementation through **v1.0.0 MVP** on `develop`.
 
 Product spec: [docs/](./docs/) (supersedes earlier bootstrap planning in git history).
 

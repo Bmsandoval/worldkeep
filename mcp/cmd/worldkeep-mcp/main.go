@@ -33,7 +33,7 @@ func main() {
 	}
 	defer st.Close()
 
-	srv := &mcp.Server{Store: st, CampaignID: campaignID}
+	srv := &mcp.Server{Store: st, CampaignID: campaignID, Role: cfg.Role}
 	if err := srv.RunStdioOS(); err != nil {
 		log.Fatalf("stdio: %v", err)
 	}

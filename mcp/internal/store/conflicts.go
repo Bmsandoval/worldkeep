@@ -16,12 +16,12 @@ func (s *Store) CheckForConflicts(ctx context.Context, campaignID string, change
 	var warnings []ConflictWarning
 	namesSeen := map[string]string{}
 
-	entities, err := s.ListEntitiesByType(ctx, campaignID, "npc")
+	entities, err := s.ListEntitiesByType(ctx, campaignID, "npc", ScopeDM)
 	if err != nil {
 		return nil, err
 	}
-	entities = append(entities, mustEntities(s.ListEntitiesByType(ctx, campaignID, "location"))...)
-	entities = append(entities, mustEntities(s.ListEntitiesByType(ctx, campaignID, "faction"))...)
+	entities = append(entities, mustEntities(s.ListEntitiesByType(ctx, campaignID, "location", ScopeDM))...)
+	entities = append(entities, mustEntities(s.ListEntitiesByType(ctx, campaignID, "faction", ScopeDM))...)
 
 	for _, e := range entities {
 		namesSeen[strings.ToLower(e.Name)] = e.ID
@@ -61,7 +61,7 @@ func (s *Store) CheckForConflicts(ctx context.Context, campaignID string, change
 			if ch.Fact == nil || ch.Fact.EntityID == nil {
 				continue
 			}
-			facts, err := s.searchFacts(ctx, campaignID, "%", 100)
+			facts, err := s.searchFacts(ctx, campaignID, "%", 100, ScopeDM)
 			if err != nil {
 				continue
 			}

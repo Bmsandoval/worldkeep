@@ -14,6 +14,7 @@ import (
 type Server struct {
 	Store           *store.Store
 	CampaignID      string
+	Role            string
 	activeSessionID string
 }
 
@@ -80,6 +81,8 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 	switch name {
 	case "get_campaign_dashboard":
 		return s.handleGetCampaignDashboard(ctx, args)
+	case "prepare_session_brief":
+		return s.handlePrepareSessionBrief(ctx, args)
 	case "get_campaign_overview":
 		return s.handleGetCampaignOverview(ctx, args)
 	case "get_entity":
@@ -106,12 +109,20 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleCheckForConflicts(ctx, args)
 	case "start_session":
 		return s.handleStartSession(ctx, args)
+	case "get_session":
+		return s.handleGetSession(ctx, args)
 	case "end_session":
 		return s.handleEndSession(ctx, args)
 	case "record_event":
 		return s.handleRecordEvent(ctx, args)
 	case "record_ruling":
 		return s.handleRecordRuling(ctx, args)
+	case "create_secret":
+		return s.handleCreateSecret(ctx, args)
+	case "import_campaign_markdown":
+		return s.handleImportCampaignMarkdown(ctx, args)
+	case "set_campaign_role":
+		return s.handleSetCampaignRole(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}

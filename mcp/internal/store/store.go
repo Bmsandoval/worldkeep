@@ -14,8 +14,6 @@ import (
 //go:embed schema.sql
 var schemaSQL string
 
-const currentSchemaVersion = 1
-
 type Store struct {
 	db *sql.DB
 }
@@ -87,27 +85,6 @@ func Open(path string) (*Store, error) {
 
 func (s *Store) Close() error {
 	return s.db.Close()
-}
-
-func (s *Store) Migrate(ctx context.Context) error {
-	if _, err := s.db.ExecContext(ctx, schemaSQL); err != nil {
-		return fmt.Errorf("apply schema: %w", err)
-	}
-
-	var version int
-	err := s.db.QueryRowContext(ctx, `SELECT COALESCE(MAX(version), 0) FROM schema_migrations`).Scan(&version)
-	if err != nil {
-		return fmt.Errorf("read schema version: %w", err)
-	}
-	if version >= currentSchemaVersion {
-		return nil
-	}
-
-	_, err = s.db.ExecContext(ctx, `INSERT INTO schema_migrations (version) VALUES (?)`, currentSchemaVersion)
-	if err != nil {
-		return fmt.Errorf("record schema version: %w", err)
-	}
-	return nil
 }
 
 func (s *Store) CreateCampaign(ctx context.Context, c Campaign) error {
@@ -208,31 +185,39 @@ VALUES (?, ?, ?, ?, ?, ?, COALESCE(NULLIF(?, ''), datetime('now')))`,
 	return nil
 }
 
-func (s *Store) SearchWorld(ctx context.Context, campaignID, query string, limit int) ([]Entity, []Fact, error) {
+func (s *Store) SearchWorld(ctx context.Context, campaignID, query string, limit int, scope ReadScope) ([]Entity, []Fact, error) {
 	if limit <= 0 {
 		limit = 20
 	}
 	pattern := "%" + strings.TrimSpace(query) + "%"
 
-	entities, err := s.searchEntities(ctx, campaignID, pattern, limit)
+	entities, err := s.searchEntities(ctx, campaignID, pattern, limit, scope)
 	if err != nil {
 		return nil, nil, err
 	}
-	facts, err := s.searchFacts(ctx, campaignID, pattern, limit)
+	facts, err := s.searchFacts(ctx, campaignID, pattern, limit, scope)
 	if err != nil {
 		return nil, nil, err
 	}
 	return entities, facts, nil
 }
 
-func (s *Store) searchEntities(ctx context.Context, campaignID, pattern string, limit int) ([]Entity, error) {
-	rows, err := s.db.QueryContext(ctx, `
+func (s *Store) searchEntities(ctx context.Context, campaignID, pattern string, limit int, scope ReadScope) ([]Entity, error) {
+	query := `
 SELECT id, campaign_id, type, name, summary, data, created_at, updated_at
 FROM entities
 WHERE campaign_id = ?
-  AND (name LIKE ? OR summary LIKE ? OR data LIKE ?)
+  AND (name LIKE ? OR summary LIKE ? OR data LIKE ?)`
+	args := []any{campaignID, pattern, pattern, pattern}
+	if !scope.IncludesDMOnly() {
+		query += ` AND type != 'secret'`
+	}
+	query += `
 ORDER BY name
-LIMIT ?`, campaignID, pattern, pattern, pattern, limit)
+LIMIT ?`
+	args = append(args, limit)
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("search entities: %w", err)
 	}
@@ -251,13 +236,21 @@ LIMIT ?`, campaignID, pattern, pattern, pattern, limit)
 	return out, rows.Err()
 }
 
-func (s *Store) searchFacts(ctx context.Context, campaignID, pattern string, limit int) ([]Fact, error) {
-	rows, err := s.db.QueryContext(ctx, `
+func (s *Store) searchFacts(ctx context.Context, campaignID, pattern string, limit int, scope ReadScope) ([]Fact, error) {
+	query := `
 SELECT id, campaign_id, entity_id, text, visibility, confidence, source_type, source_id, created_at
 FROM facts
-WHERE campaign_id = ? AND text LIKE ?
+WHERE campaign_id = ? AND text LIKE ?`
+	args := []any{campaignID, pattern}
+	if !scope.IncludesDMOnly() {
+		query += ` AND visibility != 'dm_only'`
+	}
+	query += `
 ORDER BY created_at DESC
-LIMIT ?`, campaignID, pattern, limit)
+LIMIT ?`
+	args = append(args, limit)
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("search facts: %w", err)
 	}
@@ -274,12 +267,22 @@ LIMIT ?`, campaignID, pattern, limit)
 	return out, rows.Err()
 }
 
-func (s *Store) ListEntitiesByType(ctx context.Context, campaignID, entityType string) ([]Entity, error) {
-	rows, err := s.db.QueryContext(ctx, `
+func (s *Store) ListEntitiesByType(ctx context.Context, campaignID, entityType string, scope ReadScope) ([]Entity, error) {
+	if !scope.IncludesDMOnly() && entityType == "secret" {
+		return nil, nil
+	}
+	query := `
 SELECT id, campaign_id, type, name, summary, data, created_at, updated_at
 FROM entities
-WHERE campaign_id = ? AND type = ?
-ORDER BY name`, campaignID, entityType)
+WHERE campaign_id = ? AND type = ?`
+	args := []any{campaignID, entityType}
+	if !scope.IncludesDMOnly() {
+		query += ` AND type != 'secret'`
+	}
+	query += `
+ORDER BY name`
+
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("list entities: %w", err)
 	}
@@ -346,8 +349,8 @@ LIMIT ?`, campaignID, limit)
 	return out, rows.Err()
 }
 
-func (s *Store) ListActivePlots(ctx context.Context, campaignID string) ([]Entity, error) {
-	plots, err := s.ListEntitiesByType(ctx, campaignID, "plot")
+func (s *Store) ListActivePlots(ctx context.Context, campaignID string, scope ReadScope) ([]Entity, error) {
+	plots, err := s.ListEntitiesByType(ctx, campaignID, "plot", scope)
 	if err != nil {
 		return nil, err
 	}

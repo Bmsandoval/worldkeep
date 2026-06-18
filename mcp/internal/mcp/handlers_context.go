@@ -25,6 +25,8 @@ func (s *Server) handleCompileSceneContext(ctx context.Context, args json.RawMes
 		CampaignID string `json:"campaign_id"`
 		Prompt     string `json:"prompt"`
 		Limit      int    `json:"limit"`
+		Scope      string `json:"scope"`
+		Hybrid     bool   `json:"hybrid"`
 	}
 	if err := json.Unmarshal(args, &in); err != nil || strings.TrimSpace(in.Prompt) == "" {
 		return nil, &rpcError{Code: codeInvalidParams, Message: "prompt required"}
@@ -34,15 +36,26 @@ func (s *Server) handleCompileSceneContext(ctx context.Context, args json.RawMes
 	if limit <= 0 {
 		limit = 10
 	}
+	sc, rerr := readScopeArg(s, in.Scope)
+	if rerr != nil {
+		return nil, rerr
+	}
 
-	entities, facts, err := s.Store.SearchWorld(ctx, cid, in.Prompt, limit)
+	var entities []store.Entity
+	var facts []store.Fact
+	var err error
+	if in.Hybrid {
+		entities, facts, err = s.Store.SearchWorldHybrid(ctx, cid, in.Prompt, limit, sc)
+	} else {
+		entities, facts, err = s.Store.SearchWorld(ctx, cid, in.Prompt, limit, sc)
+	}
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
 
 	tokens := tokenizePrompt(in.Prompt)
 	for _, entityType := range []string{"npc", "location", "faction"} {
-		all, listErr := s.Store.ListEntitiesByType(ctx, cid, entityType)
+		all, listErr := s.Store.ListEntitiesByType(ctx, cid, entityType, sc)
 		if listErr != nil {
 			continue
 		}
@@ -63,11 +76,11 @@ func (s *Server) handleCompileSceneContext(ctx context.Context, args json.RawMes
 		}
 	}
 
-	plots, err := s.Store.ListActivePlots(ctx, cid)
+	plots, err := s.Store.ListActivePlots(ctx, cid, sc)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
-	entities = appendNPCsAtLocations(ctx, s, cid, entities)
+	entities = appendNPCsAtLocations(ctx, s, cid, entities, sc)
 	events, err := s.Store.GetRecentEvents(ctx, cid, limit)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
@@ -79,6 +92,7 @@ func (s *Server) handleCompileSceneContext(ctx context.Context, args json.RawMes
 
 	return toolResultText(map[string]any{
 		"prompt":    in.Prompt,
+		"scope":     string(sc),
 		"actors":    filterEntitiesByTypes(entities, "npc", "faction"),
 		"locations": filterEntitiesByTypes(entities, "location"),
 		"facts":     facts,
@@ -119,10 +133,15 @@ func (s *Server) handleGetRecentEvents(ctx context.Context, args json.RawMessage
 func (s *Server) handleGetActivePlots(ctx context.Context, args json.RawMessage) (map[string]any, *rpcError) {
 	var in struct {
 		CampaignID string `json:"campaign_id"`
+		Scope      string `json:"scope"`
 	}
 	_ = json.Unmarshal(args, &in)
 	cid := campaignIDArg(s, in.CampaignID)
-	plots, err := s.Store.ListActivePlots(ctx, cid)
+	sc, rerr := readScopeArg(s, in.Scope)
+	if rerr != nil {
+		return nil, rerr
+	}
+	plots, err := s.Store.ListActivePlots(ctx, cid, sc)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
@@ -146,7 +165,7 @@ func (s *Server) handleSearchRulings(ctx context.Context, args json.RawMessage) 
 	return toolResultText(rulings), nil
 }
 
-func appendNPCsAtLocations(ctx context.Context, s *Server, campaignID string, entities []store.Entity) []store.Entity {
+func appendNPCsAtLocations(ctx context.Context, s *Server, campaignID string, entities []store.Entity, scope store.ReadScope) []store.Entity {
 	locationIDs := map[string]bool{}
 	for _, e := range entities {
 		if e.Type == "location" {
@@ -156,7 +175,7 @@ func appendNPCsAtLocations(ctx context.Context, s *Server, campaignID string, en
 	if len(locationIDs) == 0 {
 		return entities
 	}
-	npcs, err := s.Store.ListEntitiesByType(ctx, campaignID, "npc")
+	npcs, err := s.Store.ListEntitiesByType(ctx, campaignID, "npc", scope)
 	if err != nil {
 		return entities
 	}

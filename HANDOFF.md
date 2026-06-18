@@ -1,6 +1,6 @@
 # WorldKeep — Handoff
 
-_Last updated: 2026-06-17_
+_Last updated: 2026-06-18_
 
 **Starting point for a new session.** Read this first, then [AGENTS.md](./AGENTS.md) and the active GitHub issue.
 
@@ -40,28 +40,30 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: MVP (Phase 2)** — see [docs/mvp.md](./docs/mvp.md)
+**Active phase: MVP complete → Phase 3 next** — see [docs/roadmap.md](./docs/roadmap.md)
 
 POC complete through **v0.6.0** — playtest signed off in [docs/playtest-notes.md](./docs/playtest-notes.md).
+
+**MVP Phase 2 implemented through v1.0.0** on `develop` — see milestone table below.
 
 **MVP success metric:** A DM can run a long-term campaign using WorldKeep as the source of truth.
 
 ---
 
-## GitHub issue queue (MVP-aligned)
+## GitHub issue queue (MVP — complete)
 
-POC sub-issues **#23–#44** merged on `develop` (PRs #46–#62). MVP queue created 2026-06-17.
+| Milestone | Parent | Status |
+| --------- | ------ | ------ |
+| **v0.7.0** Campaign dashboard | [#67](https://github.com/Bmsandoval/worldkeep/issues/67) | ✅ #64–#66 |
+| **v0.8.0** Secrets + visibility | [#71](https://github.com/Bmsandoval/worldkeep/issues/71) | ✅ #68–#70 |
+| **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | ✅ #72–#74 |
+| **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | ✅ #76–#78 |
 
-| Milestone | Parent | Sub-issues |
-| --------- | ------ | ---------- |
-| **v0.7.0** Campaign dashboard | [#67](https://github.com/Bmsandoval/worldkeep/issues/67) | #64–#66 |
-| **v0.8.0** Secrets + visibility | [#71](https://github.com/Bmsandoval/worldkeep/issues/71) | #68–#70 |
-| **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | #72–#74 |
-| **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | #76–#78 |
-
-**Active work:** [#65](https://github.com/Bmsandoval/worldkeep/issues/65) `prepare_session_brief` alias (#64 ✅ PR [#80](https://github.com/Bmsandoval/worldkeep/pull/80)).
+**Next:** Phase 3 party intelligence ([docs/party-system.md](./docs/party-system.md)) or live campaign dogfooding.
 
 ---
+
+## GitHub issue queue (MVP-aligned — archive)
 
 ## GitHub issue queue (POC — complete)
 
@@ -134,8 +136,8 @@ git pull origin develop
 | Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
 | MCP stdio server (Cursor) | ✅ `make mcp` |
 | MCP HTTP + tunnel (ChatGPT) | ✅ `make mcp-http` / `scripts/tunnel.sh` |
+| MVP MCP tools (v0.7.0–v1.0.0) | ✅ 23 tools — dashboard, secrets, session workspace, hybrid search, import, roles |
 | Live multi-chat playtest | ✅ [docs/playtest-notes.md](./docs/playtest-notes.md) |
-| MVP issue queue (v0.7.0+) | ✅ #64–#79 |
 
 ---
 
