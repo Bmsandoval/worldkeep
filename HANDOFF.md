@@ -44,26 +44,26 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 Only implement functionality required to satisfy POC success criteria. Do not skip ahead to MVP, party system, world intel, ruleset engine, or living-world simulation.
 
+**POC implementation complete through v0.6.0** — run live playtest checklist in [docs/playtest-notes.md](./docs/playtest-notes.md).
+
 **POC success metric:** A campaign survives across multiple AI conversations without losing continuity.
 
 ---
 
 ## GitHub issue queue (POC-aligned)
 
-Bootstrap issues **#3–#22** were closed 2026-06-17. Active queue:
+All sub-issues **#23–#44** implemented on `develop` (PRs #46–#62). Parent release epics **#25–#45** track milestone acceptance.
 
-| Milestone | Parent | Sub-issues |
-| --------- | ------ | ---------- |
-| **v0.1.0** Phase 1 — Manual world store | [#25](https://github.com/Bmsandoval/worldkeep/issues/25) | [#23](https://github.com/Bmsandoval/worldkeep/issues/23), [#24](https://github.com/Bmsandoval/worldkeep/issues/24) |
-| **v0.2.0** Phase 2 — MCP read access | [#30](https://github.com/Bmsandoval/worldkeep/issues/30) | [#26](https://github.com/Bmsandoval/worldkeep/issues/26)–[#29](https://github.com/Bmsandoval/worldkeep/issues/29) |
-| **v0.3.0** Phase 3 — Propose/commit updates | [#34](https://github.com/Bmsandoval/worldkeep/issues/34) | [#31](https://github.com/Bmsandoval/worldkeep/issues/31)–[#33](https://github.com/Bmsandoval/worldkeep/issues/33) |
-| **v0.4.0** Phase 4 — Session workflow | [#38](https://github.com/Bmsandoval/worldkeep/issues/38) | [#35](https://github.com/Bmsandoval/worldkeep/issues/35)–[#37](https://github.com/Bmsandoval/worldkeep/issues/37) |
-| **v0.5.0** Phase 5 — Conflict + playtest | [#41](https://github.com/Bmsandoval/worldkeep/issues/41) | [#39](https://github.com/Bmsandoval/worldkeep/issues/39), [#40](https://github.com/Bmsandoval/worldkeep/issues/40) |
-| **v0.6.0** ChatGPT via tunnel | [#45](https://github.com/Bmsandoval/worldkeep/issues/45) | [#42](https://github.com/Bmsandoval/worldkeep/issues/42)–[#44](https://github.com/Bmsandoval/worldkeep/issues/44) |
+| Milestone | Parent | Status |
+| --------- | ------ | ------ |
+| **v0.1.0** Manual world store | [#25](https://github.com/Bmsandoval/worldkeep/issues/25) | ✅ #23–#24 |
+| **v0.2.0** MCP read (stdio) | [#30](https://github.com/Bmsandoval/worldkeep/issues/30) | ✅ #26–#29 |
+| **v0.3.0** Propose/commit | [#34](https://github.com/Bmsandoval/worldkeep/issues/34) | ✅ #31–#33 |
+| **v0.4.0** Session workflow | [#38](https://github.com/Bmsandoval/worldkeep/issues/38) | ✅ #35–#37 |
+| **v0.5.0** Conflict + playtest | [#41](https://github.com/Bmsandoval/worldkeep/issues/41) | ✅ #39–#40 |
+| **v0.6.0** ChatGPT tunnel | [#45](https://github.com/Bmsandoval/worldkeep/issues/45) | ✅ #42–#44 |
 
-**Next up:** [#23](https://github.com/Bmsandoval/worldkeep/issues/23) (schema + seed) and [#24](https://github.com/Bmsandoval/worldkeep/issues/24) (CRUD + search) under parent [#25](https://github.com/Bmsandoval/worldkeep/issues/25).
-
-Realign script: `python3 scripts/realign_github_issues.py` (idempotent only when re-run manually after closing open issues).
+**Next:** live multi-chat playtest per [docs/playtest-notes.md](./docs/playtest-notes.md); then MVP planning ([docs/mvp.md](./docs/mvp.md)).
 
 ---
 
@@ -89,7 +89,12 @@ worldkeep/
   scripts/
     create_github_issues.py
     realign_github_issues.py
-  mcp/                    ← Go store + (planned) MCP server
+    tunnel.sh
+  mcp/
+    cmd/worldkeep-mcp/       ← stdio (Cursor)
+    cmd/worldkeep-mcp-http/  ← HTTP (ChatGPT tunnel)
+    internal/store/          ← SQLite campaign store
+    internal/mcp/            ← MCP protocol + tools
 ```
 
 ---
@@ -113,9 +118,11 @@ git pull origin develop
 | ---- | ------ |
 | Product thesis, roadmap, entity model, MCP spec | ✅ [docs/](./docs/) |
 | POC design (scope, schema, demo scenario) | ✅ [docs/poc.md](./docs/poc.md) |
-| GitHub issues (v0.1.0–v0.6.0 POC queue) | ✅ realigned — see table above |
-| Go store (SQLite schema, seed, search) | 🚧 local WIP — `#23` / `#24` (not on `develop` yet) |
-| MCP stdio server | ❌ `#26`+ |
+| GitHub issues (v0.1.0–v0.6.0 POC queue) | ✅ implemented (#23–#44) |
+| Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
+| MCP stdio server (Cursor) | ✅ `make mcp` |
+| MCP HTTP + tunnel (ChatGPT) | ✅ `make mcp-http` / `scripts/tunnel.sh` |
+| Live multi-chat playtest | 📋 [docs/playtest-notes.md](./docs/playtest-notes.md) |
 
 ---
 
@@ -152,7 +159,7 @@ Details: [docs/poc.md](./docs/poc.md) §7–§14. Demo scenario: *Shadows of Bla
 ## New session quick start
 
 1. Read this file + [AGENTS.md](./AGENTS.md) + [docs/poc.md](./docs/poc.md).
-2. Confirm active issue with maintainer — start with [#23](https://github.com/Bmsandoval/worldkeep/issues/23) or [#24](https://github.com/Bmsandoval/worldkeep/issues/24).
+2. Run `make test && make seed` — connect MCP per [docs/playtest-notes.md](./docs/playtest-notes.md) or [docs/chatgpt-mcp-setup.md](./docs/chatgpt-mcp-setup.md).
 3. Branch from `develop`; implement only agreed scope.
 4. `cd mcp && go test ./...` before PR.
 5. Open PR to `develop`; **do not merge** unless maintainer explicitly asks.
