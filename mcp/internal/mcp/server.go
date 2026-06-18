@@ -91,6 +91,14 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleGetActivePlots(ctx, args)
 	case "search_rulings":
 		return s.handleSearchRulings(ctx, args)
+	case "propose_world_update":
+		return s.handleProposeWorldUpdate(ctx, args)
+	case "list_pending_updates":
+		return s.handleListPendingUpdates(ctx, args)
+	case "commit_world_update":
+		return s.handleCommitWorldUpdate(ctx, args)
+	case "reject_world_update":
+		return s.handleRejectWorldUpdate(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
