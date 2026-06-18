@@ -99,6 +99,8 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleCommitWorldUpdate(ctx, args)
 	case "reject_world_update":
 		return s.handleRejectWorldUpdate(ctx, args)
+	case "check_for_conflicts":
+		return s.handleCheckForConflicts(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
