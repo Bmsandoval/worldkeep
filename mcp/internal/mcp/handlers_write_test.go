@@ -28,14 +28,32 @@ func TestProposeCommitWorldUpdateMCP(t *testing.T) {
 		t.Fatalf("expected pending update id in %s", text)
 	}
 	var parsed struct {
-		ID string `json:"id"`
+		PendingUpdate struct {
+			ID string `json:"id"`
+		} `json:"pending_update"`
 	}
-	if err := json.Unmarshal([]byte(text), &parsed); err != nil || parsed.ID == "" {
+	if err := json.Unmarshal([]byte(text), &parsed); err != nil || parsed.PendingUpdate.ID == "" {
 		t.Fatalf("parse pending update: %v text=%s", err, text)
 	}
-	commitText := callTool(t, srv, "commit_world_update", map[string]any{"update_id": parsed.ID})
+	commitText := callTool(t, srv, "commit_world_update", map[string]any{"update_id": parsed.PendingUpdate.ID})
 	if !strings.Contains(commitText, "committed") {
 		t.Fatalf("expected committed status: %s", commitText)
+	}
+}
+
+func TestCheckForConflictsFinnEyeMCP(t *testing.T) {
+	srv := testServer(t)
+	finnID := "npc_finn"
+	changes := []store.WorldChange{{
+		Op: "add_fact",
+		Fact: &store.Fact{
+			EntityID: &finnID, Text: "Finn has both eyes.",
+			Visibility: "party_known", Confidence: "high",
+		},
+	}}
+	text := callTool(t, srv, "check_for_conflicts", map[string]any{"changes": changes})
+	if !strings.Contains(text, "contradiction") && !strings.Contains(text, "left eye") {
+		t.Fatalf("expected contradiction warning: %s", text)
 	}
 }
 
