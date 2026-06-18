@@ -12,12 +12,19 @@ func (s *Server) handleStartSession(ctx context.Context, args json.RawMessage) (
 	var in struct {
 		CampaignID string `json:"campaign_id"`
 		Title      string `json:"title"`
+		Notes      string `json:"notes"`
 	}
 	_ = json.Unmarshal(args, &in)
 	cid := campaignIDArg(s, in.CampaignID)
 	sess, err := s.Store.StartSession(ctx, cid, in.Title)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
+	}
+	if strings.TrimSpace(in.Notes) != "" {
+		sess, err = s.Store.UpdateSessionNotes(ctx, sess.ID, in.Notes)
+		if err != nil {
+			return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
+		}
 	}
 	s.activeSessionID = sess.ID
 	return toolResultText(sess), nil
@@ -27,6 +34,7 @@ func (s *Server) handleEndSession(ctx context.Context, args json.RawMessage) (ma
 	var in struct {
 		SessionID string          `json:"session_id"`
 		Summary   string          `json:"summary"`
+		Notes     string          `json:"notes"`
 		Changes   json.RawMessage `json:"changes"`
 		Reason    string          `json:"reason"`
 	}
@@ -38,7 +46,12 @@ func (s *Server) handleEndSession(ctx context.Context, args json.RawMessage) (ma
 	if id == "" {
 		return nil, &rpcError{Code: codeInvalidParams, Message: "session_id required"}
 	}
-	sess, err := s.Store.EndSession(ctx, id)
+	if strings.TrimSpace(in.Notes) != "" {
+		if _, err := s.Store.UpdateSessionNotes(ctx, id, in.Notes); err != nil {
+			return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
+		}
+	}
+	sess, err := s.Store.EndSession(ctx, id, in.Summary)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
@@ -70,6 +83,7 @@ func (s *Server) handleEndSession(ctx context.Context, args json.RawMessage) (ma
 		warnings, _ := s.Store.CheckForConflicts(ctx, cid, changes)
 		out["pending_update"] = pending
 		out["warnings"] = warnings
+		out["canon_review_queue"] = changes
 	}
 	return toolResultText(out), nil
 }

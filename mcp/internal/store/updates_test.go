@@ -41,7 +41,7 @@ func TestProposeCommitRejectUpdate(t *testing.T) {
 	if _, err := s.CommitWorldUpdate(ctx, pending.ID); err != nil {
 		t.Fatalf("commit: %v", err)
 	}
-	entities, facts, err := s.SearchWorld(ctx, seed.DemoCampaignID, "spy", 5)
+	entities, facts, err := s.SearchWorld(ctx, seed.DemoCampaignID, "spy", 5, store.ScopeParty)
 	if err != nil {
 		t.Fatalf("search: %v", err)
 	}

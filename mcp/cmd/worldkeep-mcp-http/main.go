@@ -36,7 +36,7 @@ func main() {
 	}
 	defer st.Close()
 
-	srv := &mcp.Server{Store: st, CampaignID: campaignID}
+	srv := &mcp.Server{Store: st, CampaignID: campaignID, Role: cfg.Role}
 	if err := mcp.ListenHTTP(addr, srv); err != nil {
 		log.Fatalf("http: %v", err)
 	}

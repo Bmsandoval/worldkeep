@@ -67,11 +67,43 @@ func (s *Server) handleCommitWorldUpdate(ctx context.Context, args json.RawMessa
 	if err := json.Unmarshal(args, &in); err != nil || strings.TrimSpace(in.UpdateID) == "" {
 		return nil, &rpcError{Code: codeInvalidParams, Message: "update_id required"}
 	}
+	if s.Role == "player" {
+		return nil, &rpcError{Code: codeInvalidParams, Message: "player role cannot commit canon updates"}
+	}
+	pending, err := s.Store.GetPendingUpdate(ctx, in.UpdateID)
+	if err != nil {
+		return toolResultError(fmt.Sprintf("commit failed: %v", err)), nil
+	}
+	var changes []store.WorldChange
+	_ = json.Unmarshal(pending.ProposedChanges, &changes)
+
 	updated, err := s.Store.CommitWorldUpdate(ctx, in.UpdateID)
 	if err != nil {
 		return toolResultError(fmt.Sprintf("commit failed: %v", err)), nil
 	}
+	if s.activeSessionID != "" {
+		for _, ch := range changes {
+			if eid := entityIDFromChange(ch); eid != "" {
+				_ = s.Store.RecordSessionChange(ctx, s.activeSessionID, eid, ch.Op)
+			}
+		}
+	}
 	return toolResultText(updated), nil
+}
+
+func entityIDFromChange(ch store.WorldChange) string {
+	switch ch.Op {
+	case "add_fact":
+		if ch.Fact != nil && ch.Fact.EntityID != nil {
+			return *ch.Fact.EntityID
+		}
+	case "upsert_entity", "create_entity", "update_entity":
+		if ch.Entity != nil {
+			return ch.Entity.ID
+		}
+		return ch.EntityID
+	}
+	return ""
 }
 
 func (s *Server) handleRejectWorldUpdate(ctx context.Context, args json.RawMessage) (map[string]any, *rpcError) {
