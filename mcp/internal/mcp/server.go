@@ -78,6 +78,8 @@ func (s *Server) initializeResult(params json.RawMessage) map[string]any {
 
 func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage) (map[string]any, *rpcError) {
 	switch name {
+	case "get_campaign_dashboard":
+		return s.handleGetCampaignDashboard(ctx, args)
 	case "get_campaign_overview":
 		return s.handleGetCampaignOverview(ctx, args)
 	case "get_entity":

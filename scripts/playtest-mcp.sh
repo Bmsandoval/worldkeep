@@ -30,6 +30,10 @@ section "Health"
 curl -sS "http://127.0.0.1:8788/healthz"
 echo
 
+section "Campaign dashboard (session prep)"
+call get_campaign_dashboard '{}' \
+  | jq -r '.result.content[0].text' | jq '{campaign: .campaign.name, plots: [.active_plots[]?.name], pending: .pending_update_count}'
+
 section "Initialize"
 rpc initialize '{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"playtest","version":"1.0"}}' \
   | jq -r '.result.instructions' | head -5

@@ -58,6 +58,32 @@ func TestGetCampaignOverview(t *testing.T) {
 	}
 }
 
+func TestGetCampaignDashboard(t *testing.T) {
+	srv := testServer(t)
+	text := callTool(t, srv, "get_campaign_dashboard", map[string]any{})
+	for _, want := range []string{"Shadows of Blackport", "Missing Prince", "pending_update_count"} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("expected %q in dashboard", want)
+		}
+	}
+
+	sessText := callTool(t, srv, "start_session", map[string]any{"title": "Dashboard test session"})
+	var sess struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal([]byte(sessText), &sess); err != nil {
+		t.Fatalf("start session: %v", err)
+	}
+
+	dashText := callTool(t, srv, "get_campaign_dashboard", map[string]any{})
+	if !strings.Contains(dashText, sess.ID) {
+		t.Fatal("expected open session on dashboard")
+	}
+	if !strings.Contains(dashText, "Dashboard test session") {
+		t.Fatal("expected open session title on dashboard")
+	}
+}
+
 func TestGetEntityFinn(t *testing.T) {
 	srv := testServer(t)
 	text := callTool(t, srv, "get_entity", map[string]any{"entity_id": "npc_finn"})
