@@ -59,7 +59,7 @@ POC sub-issues **#23–#44** merged on `develop` (PRs #46–#62). MVP queue crea
 | **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | #72–#74 |
 | **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | #76–#78 |
 
-**Active work:** [#64](https://github.com/Bmsandoval/worldkeep/issues/64) `get_campaign_dashboard` MCP tool.
+**Active work:** [#65](https://github.com/Bmsandoval/worldkeep/issues/65) `prepare_session_brief` alias (#64 ✅ PR [#80](https://github.com/Bmsandoval/worldkeep/pull/80)).
 
 ---
 
