@@ -73,3 +73,23 @@ func TestSearchWorldCrimson(t *testing.T) {
 		t.Fatal("expected Crimson Guild in search results")
 	}
 }
+
+func TestCompileSceneContextBlackportFinn(t *testing.T) {
+	srv := testServer(t)
+	text := callTool(t, srv, "compile_scene_context", map[string]any{
+		"prompt": "The party returns to Blackport and asks Finn about the Crimson Guild.",
+	})
+	for _, want := range []string{"Finn", "Blackport", "Crimson Guild", "Missing Prince"} {
+		if !strings.Contains(text, want) {
+			t.Fatalf("expected %q in scene context", want)
+		}
+	}
+}
+
+func TestSearchRulingsFlanking(t *testing.T) {
+	srv := testServer(t)
+	text := callTool(t, srv, "search_rulings", map[string]any{"query": "flanking"})
+	if !strings.Contains(text, "+3") {
+		t.Fatal("expected flanking ruling")
+	}
+}

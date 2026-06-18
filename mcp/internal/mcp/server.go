@@ -83,6 +83,14 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleGetEntity(ctx, args)
 	case "search_world":
 		return s.handleSearchWorld(ctx, args)
+	case "compile_scene_context":
+		return s.handleCompileSceneContext(ctx, args)
+	case "get_recent_events":
+		return s.handleGetRecentEvents(ctx, args)
+	case "get_active_plots":
+		return s.handleGetActivePlots(ctx, args)
+	case "search_rulings":
+		return s.handleSearchRulings(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
