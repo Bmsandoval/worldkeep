@@ -57,6 +57,23 @@ func TestCheckForConflictsFinnEyeMCP(t *testing.T) {
 	}
 }
 
+func TestListPendingUpdatesIncludesWarnings(t *testing.T) {
+	srv := testServer(t)
+	finnID := "npc_finn"
+	changes := []store.WorldChange{{
+		Op: "add_fact",
+		Fact: &store.Fact{
+			EntityID: &finnID, Text: "Finn has both eyes.",
+			Visibility: "party_known", Confidence: "high",
+		},
+	}}
+	_ = callTool(t, srv, "propose_world_update", map[string]any{"changes": changes, "reason": "test"})
+	listText := callTool(t, srv, "list_pending_updates", map[string]any{})
+	if !strings.Contains(listText, "warnings") {
+		t.Fatalf("expected warnings in list output: %s", listText)
+	}
+}
+
 func TestRejectWorldUpdateMCP(t *testing.T) {
 	srv := testServer(t)
 	finnID := "npc_finn"
