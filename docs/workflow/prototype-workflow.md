@@ -4,7 +4,7 @@ Shared **planning-first, issue-driven** process for all PoCs spawned from [Proto
 
 **App repo:** `Bmsandoval/worldkeep` · **Integration branch:** `develop` (no `main`)
 
-Per-app templates and examples: [issue-pr-workflow.md](./planning/issue-pr-workflow.md) in each repo (Laravel kit ships a stub).
+Per-app templates and examples: [issue-pr-workflow.md](./issue-pr-workflow.md) in each repo (Laravel kit ships a stub).
 
 ---
 
@@ -13,7 +13,7 @@ Per-app templates and examples: [issue-pr-workflow.md](./planning/issue-pr-workf
 | Priority | Source | Use it for |
 |----------|--------|------------|
 | **1 — Work queue** | **GitHub issues** (prioritized with maintainer) | **What to build right now** — scope, acceptance criteria |
-| **2 — Strategy** | **`docs/planning/`** (+ backlog, icebox, ideas) | Why, phases, constraints |
+| **2 — Strategy** | **`docs/`** (+ roadmap backlog/icebox) | Why, phases, constraints |
 | **3 — Process** | **`AGENTS.md`** + this file | How to branch, PR, test, release |
 
 **Rules**
@@ -33,10 +33,10 @@ Per-app templates and examples: [issue-pr-workflow.md](./planning/issue-pr-workf
 
 ### 1. Planning phase (first)
 
-1. **Read strategy** — `product-phases.md`, `product-vision.md`, and any doc relevant to the goal.
+1. **Read strategy** — [docs/README.md](../README.md), [docs/poc.md](../poc.md), [docs/roadmap.md](../roadmap.md), and any doc relevant to the goal.
 2. **Read the queue** — open milestones, parent release issues, sub-issues (`gh issue list --repo Bmsandoval/worldkeep`).
 3. **Align with the maintainer** — confirm milestone and sub-issue for this session. Create milestone/parent if missing.
-4. **Break work into issues** — parent release issue + sub-issues with acceptance criteria. Use [issue-pr-workflow.md](./planning/issue-pr-workflow.md) templates.
+4. **Break work into issues** — parent release issue + sub-issues with acceptance criteria. Use [issue-pr-workflow.md](./issue-pr-workflow.md) templates.
 
 Planning docs = *what could be built*; **GitHub issues = what we are building now**.
 
@@ -65,7 +65,7 @@ Only after an **active sub-issue** is agreed:
 ### New session quick start
 
 ```
-1. Read docs/planning/ + list open issues
+1. Read docs/ + list open issues
 2. Confirm milestone / parent / next sub-issue with maintainer
 3. Create or refine issues if the queue is missing or stale
 4. Branch → code → PR for one sub-issue at a time
@@ -223,7 +223,7 @@ gh api repos/Bmsandoval/worldkeep/milestones -f title="v0.1.0" -f description="�
 
 ## Planning documents
 
-Agent-generated planning artifacts live under **`docs/planning/`** — not repo root or source trees.
+Agent-generated planning artifacts live under **`docs/`** — not repo root or source trees.
 
 Planning informs issue writing; **issues drive implementation**. Do not implement backlog, icebox, or platform scope without a prioritized issue.
 
@@ -239,7 +239,7 @@ Do not add “Made with Cursor”, co-author trailers, or “AI-assisted” disc
 
 **Planning (before code)**
 
-- [ ] Read relevant `docs/planning/`
+- [ ] Read relevant `docs/`
 - [ ] List open issues; confirm milestone + parent + next sub-issue
 - [ ] Create/update milestone, parent, sub-issues if queue is incomplete
 

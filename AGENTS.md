@@ -1,4 +1,4 @@
-# Agent instructions — Worldkeep
+# Agent instructions — WorldKeep
 
 **Repo:** `Bmsandoval/worldkeep` · **Integration branch:** `develop`
 
@@ -6,78 +6,97 @@
 
 ---
 
+## Source of truth (read this)
+
+| Priority | Source | Use it for |
+| -------- | ------ | ---------- |
+| **1 — Product** | **`docs/`** | What WorldKeep is, POC scope, data model, MCP surface, roadmap |
+| **2 — Work queue** | **GitHub issues** (after realignment) | What to build right now |
+| **3 — Process** | **`AGENTS.md`** + [docs/workflow/](./docs/workflow/) | How to branch, PR, test, release |
+
+**Superseded:** The June 2026 bootstrap under `docs/planning/` (Pokémon premise, `start_campaign` / `move_to`, v0.1–v0.4 release backlog) is **obsolete**. Do not follow it. Git history preserves it for reference only.
+
+**Canonical product docs:** [docs/README.md](./docs/README.md)
+
+---
+
 ## Development workflow (required)
 
-Follow **[docs/planning/prototype-workflow.md](./docs/planning/prototype-workflow.md)** — shared planning-first, issue-driven process.
+Follow **[docs/workflow/prototype-workflow.md](./docs/workflow/prototype-workflow.md)** — shared planning-first, issue-driven process.
 
-Templates: [issue-pr-workflow.md](./docs/planning/issue-pr-workflow.md), [prototype-release-backlog.md](./docs/planning/prototype-release-backlog.md).
+Templates: [issue-pr-workflow.md](./docs/workflow/issue-pr-workflow.md).
 
 ```bash
 gh issue list --repo Bmsandoval/worldkeep --state open
 ```
 
-**Maintainer gates:** never merge PRs or cut releases unless explicitly asked. Never implement from planning docs without an open sub-issue.
+**Maintainer gates:** never merge PRs or cut releases unless explicitly asked. Never implement from docs alone without an open sub-issue agreed with the maintainer.
 
 ---
 
 ## Product vision (one paragraph)
 
-**Worldkeep** is external **world memory** for LLM-assisted play and fiction. A local MCP server stores locations, entities, events, lore, and player state in SQLite. The model **reads scoped context** before narrating and **writes durable facts** when the user moves, meets NPCs, or establishes canon. Users **bootstrap** each campaign with a natural-language premise (e.g. *"we are Pokémon trainers"*). ChatGPT connects via **local MCP + HTTPS tunnel** during the prototype; cloud hosting is later.
+**WorldKeep** is a **continuity engine** for AI-assisted tabletop RPGs and narrative play. It stores structured campaign memory (actors, locations, events, plots, facts, rulings) and exposes it via MCP so an AI client can **retrieve relevant context before narrating** and **propose canon updates** that a human approves. WorldKeep remembers; the AI reasons.
 
-**North star (later):** Campaign manager with map/timeline UI, scenario template packs, GM/player visibility, optional mechanics layers, and cloud sync — see [full-expansion-roadmap.md](./docs/planning/full-expansion-roadmap.md).
+**Active phase:** **POC** — prove memory reliability across sessions. See [docs/poc.md](./docs/poc.md).
 
-**Prototype (build now, `v0.x`):** Prove the **memory loop** — bootstrap scenario → play with tools → resume without drift. **MVP** (`v1.x`, later) is a shippable product (accounts, UI, polish). Do not call prototype work "MVP" in issues.
+**Later phases:** MVP campaign OS → party intelligence → campaign intelligence. Backlog: ruleset engine, living world. Icebox: narrative optimization. See [docs/roadmap.md](./docs/roadmap.md).
 
 ---
 
 ## Stack (agreed for prototype)
 
 | Area | Choice |
-|------|--------|
-| **Language** | **Go** — MCP server, SQLite, tests |
-| **Storage** | **SQLite + FTS5** — one file per campaign under `./data/` |
+| ---- | ------ |
+| **Language** | **Go** — MCP server, storage, tests |
+| **Storage** | **SQLite** for local POC (Postgres optional later) |
 | **MCP (local)** | **stdio** for Cursor / Claude Desktop |
-| **MCP (ChatGPT)** | **Streamable HTTP** on localhost + **tunnel** (cloudflared/ngrok) — no cloud deploy in v0.2 |
-| **Auth** | **None** in prototype — single user, local machine |
+| **MCP (ChatGPT)** | **Streamable HTTP** on localhost + **tunnel** — after POC read path |
+| **Auth** | **None** in POC — single user, local machine |
 
-Pattern: follow [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp) for remote HTTP shape; storage like ideator's SQLite ledger.
+Pattern: follow [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp) for remote HTTP shape.
 
 ---
 
 ## Hard rules for the play agent (MCP server instructions)
 
-When Worldkeep is connected, the client LLM must:
+When WorldKeep is connected, the client LLM must:
 
-1. Call **`get_scene_context`** (or equivalent) before narrating during active play.
-2. Call **write tools** when location, entities, or permanent facts change.
+1. Call **context retrieval** (`compile_scene_context` / `get_relevant_context`) before narrating during active play.
+2. Use **propose → commit** update flow for canon changes — not silent overwrites.
 3. **Not contradict** stored canon without an explicit update tool call.
-4. Treat tool output as **raw data** — Worldkeep stores; the LLM narrates.
+4. Treat tool output as **raw data** — WorldKeep stores; the LLM narrates.
 
-Scenario bootstrap is **mandatory** for a new campaign via **`start_campaign`** (see [scenario-bootstrap.md](./docs/planning/scenario-bootstrap.md)).
+Session flow: [docs/session-lifecycle.md](./docs/session-lifecycle.md). Context pipeline: [docs/context-pipeline.md](./docs/context-pipeline.md).
 
 ---
 
-## Non-goals (prototype `v0.x`)
+## Non-goals (POC)
 
+- VTT, map UI, combat tracker
+- Full rules engine / dice automation
+- Living world / faction simulation
+- Narrative optimization / player modeling
 - Multi-user cloud accounts
-- Full TTRPG rules engine / dice automation (defer to schema packs later)
-- Map visualization UI
 - Import from World Anvil / Notion
-- Production OAuth / ECS deploy (tunnel only for ChatGPT)
+
+See [docs/poc.md](./docs/poc.md) §2 and [docs/roadmap.md](./docs/roadmap.md).
 
 ---
 
 ## Planning documents
 
-All planning artifacts live under **`docs/planning/`**. Key docs:
+All product artifacts live under **`docs/`**:
 
 | Doc | Role |
-|-----|------|
-| [product-vision.md](./docs/planning/product-vision.md) | Boundaries and primary offering |
-| [product-phases.md](./docs/planning/product-phases.md) | Prototype vs MVP vs platform |
-| [full-expansion-roadmap.md](./docs/planning/full-expansion-roadmap.md) | Every expansion direction + timeline |
-| [scenario-bootstrap.md](./docs/planning/scenario-bootstrap.md) | Premise dictation and templates |
-| [mcp-tools-design.md](./docs/planning/mcp-tools-design.md) | Tools and data model |
-| [local-mcp-architecture.md](./docs/planning/local-mcp-architecture.md) | Local run + tunnel |
+| --- | ---- |
+| [product-thesis.md](./docs/product-thesis.md) | Why WorldKeep exists |
+| [roadmap.md](./docs/roadmap.md) | Phases, backlog, icebox |
+| [entity-model.md](./docs/entity-model.md) | Canonical entities |
+| [mcp.md](./docs/mcp.md) | MCP operations |
+| [context-pipeline.md](./docs/context-pipeline.md) | Context retrieval (core product) |
+| [session-lifecycle.md](./docs/session-lifecycle.md) | Play session flow |
+| [poc.md](./docs/poc.md) | **What to build first** |
+| [mvp.md](./docs/mvp.md) | Post-POC scope (do not build yet) |
 
-Planning informs issues; **issues drive implementation**.
+Planning informs issues; **issues drive implementation** once realigned to POC docs.
