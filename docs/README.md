@@ -2,7 +2,7 @@
 
 **Source of truth for product direction, architecture, and phased delivery.**
 
-These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026). If you find stale references to Pokémon premise bootstrap, `start_campaign`, `move_to`, or `v0.1.0–v0.4.0` prototype milestones in GitHub issues, treat **`docs/`** as authoritative and realign issues before implementing.
+These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026). GitHub issues were realigned 2026-06-17 to match [poc.md](./poc.md) §14 — see [HANDOFF.md](../HANDOFF.md) for issue numbers.
 
 ---
 
