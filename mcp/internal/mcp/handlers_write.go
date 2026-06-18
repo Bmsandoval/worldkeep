@@ -46,7 +46,18 @@ func (s *Server) handleListPendingUpdates(ctx context.Context, args json.RawMess
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
-	return toolResultText(list), nil
+	type item struct {
+		store.PendingUpdate
+		Warnings []store.ConflictWarning `json:"warnings"`
+	}
+	var enriched []item
+	for _, u := range list {
+		var changes []store.WorldChange
+		_ = json.Unmarshal(u.ProposedChanges, &changes)
+		warnings, _ := s.Store.CheckForConflicts(ctx, cid, changes)
+		enriched = append(enriched, item{PendingUpdate: u, Warnings: warnings})
+	}
+	return toolResultText(enriched), nil
 }
 
 func (s *Server) handleCommitWorldUpdate(ctx context.Context, args json.RawMessage) (map[string]any, *rpcError) {
