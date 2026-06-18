@@ -67,6 +67,7 @@ func (s *Server) handleCompileSceneContext(ctx context.Context, args json.RawMes
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
+	entities = appendNPCsAtLocations(ctx, s, cid, entities)
 	events, err := s.Store.GetRecentEvents(ctx, cid, limit)
 	if err != nil {
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
@@ -143,4 +144,39 @@ func (s *Server) handleSearchRulings(ctx context.Context, args json.RawMessage) 
 		return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
 	}
 	return toolResultText(rulings), nil
+}
+
+func appendNPCsAtLocations(ctx context.Context, s *Server, campaignID string, entities []store.Entity) []store.Entity {
+	locationIDs := map[string]bool{}
+	for _, e := range entities {
+		if e.Type == "location" {
+			locationIDs[e.ID] = true
+		}
+	}
+	if len(locationIDs) == 0 {
+		return entities
+	}
+	npcs, err := s.Store.ListEntitiesByType(ctx, campaignID, "npc")
+	if err != nil {
+		return entities
+	}
+	seen := map[string]bool{}
+	for _, e := range entities {
+		seen[e.ID] = true
+	}
+	for _, npc := range npcs {
+		if seen[npc.ID] {
+			continue
+		}
+		var data map[string]any
+		if err := json.Unmarshal(npc.Data, &data); err != nil {
+			continue
+		}
+		locID, _ := data["location_id"].(string)
+		if locationIDs[locID] {
+			entities = append(entities, npc)
+			seen[npc.ID] = true
+		}
+	}
+	return entities
 }
