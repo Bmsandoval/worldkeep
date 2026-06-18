@@ -40,32 +40,28 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: MVP complete → Phase 3 next** — see [docs/roadmap.md](./docs/roadmap.md)
+**Active phase: Post-MVP — Web UI + participant handoff** — see [docs/roadmap.md](./docs/roadmap.md)
 
-POC complete through **v0.6.0** — playtest signed off in [docs/playtest-notes.md](./docs/playtest-notes.md).
+POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**MVP Phase 2 implemented through v1.0.0** on `develop` — see milestone table below.
-
-**MVP success metric:** A DM can run a long-term campaign using WorldKeep as the source of truth.
+**Next recommended:** [#82](https://github.com/Bmsandoval/worldkeep/issues/82) REST API foundation (v1.1.0), or Phase 3 actor MCP in parallel.
 
 ---
 
-## GitHub issue queue (MVP — complete)
+## GitHub issue queue (Post-MVP — active)
 
-| Milestone | Parent | Status |
-| --------- | ------ | ------ |
-| **v0.7.0** Campaign dashboard | [#67](https://github.com/Bmsandoval/worldkeep/issues/67) | ✅ #64–#66 |
-| **v0.8.0** Secrets + visibility | [#71](https://github.com/Bmsandoval/worldkeep/issues/71) | ✅ #68–#70 |
-| **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | ✅ #72–#74 |
-| **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | ✅ #76–#78 |
+| Milestone | Parent | Sub-issues | When (rough) |
+| --------- | ------ | ---------- | ------------ |
+| **v1.1.0** REST API | [#84](https://github.com/Bmsandoval/worldkeep/issues/84) | #82–#83 | ~1 release after v1.0.0 |
+| **v1.2.0** First browser UI | [#87](https://github.com/Bmsandoval/worldkeep/issues/87) | #85–#86 | ~1 release — **dashboard + approvals in browser** |
+| **v1.3.0** Browse + session UI | [#90](https://github.com/Bmsandoval/worldkeep/issues/90) | #88–#89 | ~1 release |
+| **v1.4.0** Campaign seats | [#93](https://github.com/Bmsandoval/worldkeep/issues/93) | #91–#92 | Seats schema + MCP |
+| **v1.5.0** Human ↔ AI handoff | [#97](https://github.com/Bmsandoval/worldkeep/issues/97) | #94–#96 | Friend joins / DM takeover / leave → AI |
+| **v1.6.0** Seat UI + invites | [#100](https://github.com/Bmsandoval/worldkeep/issues/100) | #98–#99 | Browser join/handoff |
 
-**Next:** Phase 3 party intelligence ([docs/party-system.md](./docs/party-system.md)) or live campaign dogfooding.
+Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/participant-handoff.md](./docs/participant-handoff.md)
 
 ---
-
-## GitHub issue queue (MVP-aligned — archive)
-
-## GitHub issue queue (POC — complete)
 
 | Milestone | Parent | Status |
 | --------- | ------ | ------ |
@@ -101,6 +97,7 @@ worldkeep/
     create_github_issues.py
     realign_github_issues.py
     realign_mvp_github_issues.py
+    realign_post_mvp_github_issues.py
     playtest-mcp.sh
     playtest-stdio.sh
     tunnel.sh

@@ -23,6 +23,8 @@ These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026
 | -------- | ----- |
 | [poc.md](./poc.md) | Proof of concept — **build this first** |
 | [mvp.md](./mvp.md) | Campaign operating system |
+| [web-ui.md](./web-ui.md) | Browser UI delivery plan (Phase 2.5) |
+| [participant-handoff.md](./participant-handoff.md) | Human ↔ AI seat cycling |
 | [party-system.md](./party-system.md) | Persistent companions |
 | [world-intel.md](./world-intel.md) | Campaign intelligence |
 | [ruleset-engine.md](./ruleset-engine.md) | Custom rulesets (backlog) |

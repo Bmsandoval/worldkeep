@@ -88,6 +88,46 @@ Transform WorldKeeper into the authoritative campaign source of truth.
 
 A DM can successfully run a long-term campaign using WorldKeeper.
 
+**Status:** MCP backend complete (v0.7.0–v1.0.0). Browser UI deferred to Phase 2.5 — see [web-ui.md](./web-ui.md).
+
+---
+
+## Phase 2.5 — Web UI
+
+### "Can a DM run this without MCP?"
+
+Document:
+
+```text
+web-ui.md
+```
+
+### Goal
+
+Minimal browser admin for dashboard, canon approval, world browse, and (later) seat management.
+
+### Delivers
+
+* REST API foundation (v1.1.0)
+* Dashboard + approval queue in browser (v1.2.0) — **first web UI**
+* World browser + session timeline (v1.3.0)
+* Seat invite/handoff UI (v1.6.0, after participant handoff MCP)
+
+### Rough sequence (after v1.0.0)
+
+```text
+v1.1.0  REST API        (~1 release)
+v1.2.0  Admin UI        (~1 release)  ← first browser milestone
+v1.3.0  Browse + session UI
+v1.4.0  Campaign seats  (MCP; see participant-handoff.md)
+v1.5.0  Handoff human↔AI
+v1.6.0  Seat UI + invites
+```
+
+### Success Metric
+
+DM approves canon and preps sessions in the browser; MCP clients unchanged.
+
 ---
 
 ## Phase 3 — Party Intelligence
@@ -120,6 +160,10 @@ Create persistent companions and AI-controlled party members.
 ### Success Metric
 
 Companions remain recognizable and consistent after dozens of sessions.
+
+### Related: participant handoff
+
+Human or AI may **control** each seat (DM or party member) and swap mid-campaign — see [participant-handoff.md](./participant-handoff.md) (v1.4.0–v1.6.0).
 
 ---
 
@@ -284,14 +328,20 @@ Player-specific optimization becomes a major differentiator.
 ```text
 POC
 ↓
-MVP
+MVP (MCP)
 ↓
-Party Intelligence
+Web UI foundation + admin (Phase 2.5)
+↓
+Campaign seats + handoff (v1.4–v1.5)
+↓
+Party Intelligence (actors)
 ↓
 Campaign Intelligence
 ```
 
-These four phases represent the core WorldKeeper vision.
+Phase 2.5 UI and v1.4–v1.5 seats can overlap with Phase 3 actor MCP work; seat **handoff** (v1.5) should follow actor profiles.
+
+These phases represent the core WorldKeeper vision.
 
 Everything beyond this is optional.
 
