@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"strings"
+
+	"github.com/Bmsandoval/worldkeep/mcp/internal/store"
 )
 
 func (s *Server) handleStartSession(ctx context.Context, args json.RawMessage) (map[string]any, *rpcError) {
@@ -23,7 +25,10 @@ func (s *Server) handleStartSession(ctx context.Context, args json.RawMessage) (
 
 func (s *Server) handleEndSession(ctx context.Context, args json.RawMessage) (map[string]any, *rpcError) {
 	var in struct {
-		SessionID string `json:"session_id"`
+		SessionID string          `json:"session_id"`
+		Summary   string          `json:"summary"`
+		Changes   json.RawMessage `json:"changes"`
+		Reason    string          `json:"reason"`
 	}
 	_ = json.Unmarshal(args, &in)
 	id := strings.TrimSpace(in.SessionID)
@@ -40,5 +45,31 @@ func (s *Server) handleEndSession(ctx context.Context, args json.RawMessage) (ma
 	if s.activeSessionID == id {
 		s.activeSessionID = ""
 	}
-	return toolResultText(sess), nil
+
+	out := map[string]any{"session": sess}
+	if strings.TrimSpace(in.Summary) != "" {
+		out["session_summary"] = in.Summary
+	}
+	if len(in.Changes) > 0 {
+		cid := campaignIDArg(s, "")
+		var changes []store.WorldChange
+		if err := json.Unmarshal(in.Changes, &changes); err != nil {
+			return nil, &rpcError{Code: codeInvalidParams, Message: "changes must be a JSON array"}
+		}
+		reason := in.Reason
+		if reason == "" {
+			reason = in.Summary
+		}
+		if reason == "" {
+			reason = "End-of-session canon updates"
+		}
+		pending, err := s.Store.ProposeWorldUpdate(ctx, cid, changes, reason)
+		if err != nil {
+			return nil, &rpcError{Code: codeInternalError, Message: err.Error()}
+		}
+		warnings, _ := s.Store.CheckForConflicts(ctx, cid, changes)
+		out["pending_update"] = pending
+		out["warnings"] = warnings
+	}
+	return toolResultText(out), nil
 }

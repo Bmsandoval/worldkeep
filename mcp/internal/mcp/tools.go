@@ -91,8 +91,13 @@ func toolDefs() []map[string]any {
 			map[string]any{"campaign_id": campaignID, "title": strProp("Session title")},
 			nil, false, false),
 		tool("end_session",
-			"Close the active session.",
-			map[string]any{"session_id": strProp("Session id")}, []string{"session_id"}, false, false),
+			"Close the active session; optional summary and changes propose a pending canon update.",
+			map[string]any{
+				"session_id": strProp("Session id (defaults to active session)"),
+				"summary":    strProp("End-of-session summary for the DM"),
+				"changes":    objProp("Optional JSON array of canon changes to propose"),
+				"reason":     strProp("Reason for proposed changes"),
+			}, nil, false, false),
 		tool("record_event",
 			"Record a campaign event (via active session when set).",
 			map[string]any{
