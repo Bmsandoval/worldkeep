@@ -12,8 +12,9 @@ import (
 )
 
 type Server struct {
-	Store      *store.Store
-	CampaignID string
+	Store           *store.Store
+	CampaignID      string
+	activeSessionID string
 }
 
 func (s *Server) Dispatch(req rpcRequest) (rpcResponse, bool) {
@@ -101,6 +102,10 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleRejectWorldUpdate(ctx, args)
 	case "check_for_conflicts":
 		return s.handleCheckForConflicts(ctx, args)
+	case "start_session":
+		return s.handleStartSession(ctx, args)
+	case "end_session":
+		return s.handleEndSession(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
