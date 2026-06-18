@@ -106,6 +106,10 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleStartSession(ctx, args)
 	case "end_session":
 		return s.handleEndSession(ctx, args)
+	case "record_event":
+		return s.handleRecordEvent(ctx, args)
+	case "record_ruling":
+		return s.handleRecordRuling(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
