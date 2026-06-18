@@ -10,6 +10,15 @@ WorldKeep is a continuity layer between AI and long-running campaigns. It stores
 
 Product spec: [docs/](./docs/) (supersedes earlier bootstrap planning in git history).
 
+## Quick start
+
+```bash
+make seed
+make test
+make mcp        # stdio — Cursor
+make mcp-http   # HTTP — ChatGPT via scripts/tunnel.sh
+```
+
 ## Quick concept
 
 1. **Create a campaign** — e.g. *Shadows of Blackport*.
