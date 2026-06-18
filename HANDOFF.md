@@ -40,19 +40,30 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: POC** — see [docs/poc.md](./docs/poc.md)
+**Active phase: MVP (Phase 2)** — see [docs/mvp.md](./docs/mvp.md)
 
-Only implement functionality required to satisfy POC success criteria. Do not skip ahead to MVP, party system, world intel, ruleset engine, or living-world simulation.
+POC complete through **v0.6.0** — playtest signed off in [docs/playtest-notes.md](./docs/playtest-notes.md).
 
-**POC implementation complete through v0.6.0** — run live playtest checklist in [docs/playtest-notes.md](./docs/playtest-notes.md).
-
-**POC success metric:** A campaign survives across multiple AI conversations without losing continuity.
+**MVP success metric:** A DM can run a long-term campaign using WorldKeep as the source of truth.
 
 ---
 
-## GitHub issue queue (POC-aligned)
+## GitHub issue queue (MVP-aligned)
 
-All sub-issues **#23–#44** implemented on `develop` (PRs #46–#62). Parent release epics **#25–#45** track milestone acceptance.
+POC sub-issues **#23–#44** merged on `develop` (PRs #46–#62). MVP queue created 2026-06-17.
+
+| Milestone | Parent | Sub-issues |
+| --------- | ------ | ---------- |
+| **v0.7.0** Campaign dashboard | [#67](https://github.com/Bmsandoval/worldkeep/issues/67) | #64–#66 |
+| **v0.8.0** Secrets + visibility | [#71](https://github.com/Bmsandoval/worldkeep/issues/71) | #68–#70 |
+| **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | #72–#74 |
+| **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | #76–#78 |
+
+**Active work:** [#64](https://github.com/Bmsandoval/worldkeep/issues/64) `get_campaign_dashboard` MCP tool.
+
+---
+
+## GitHub issue queue (POC — complete)
 
 | Milestone | Parent | Status |
 | --------- | ------ | ------ |
@@ -62,8 +73,6 @@ All sub-issues **#23–#44** implemented on `develop` (PRs #46–#62). Parent re
 | **v0.4.0** Session workflow | [#38](https://github.com/Bmsandoval/worldkeep/issues/38) | ✅ #35–#37 |
 | **v0.5.0** Conflict + playtest | [#41](https://github.com/Bmsandoval/worldkeep/issues/41) | ✅ #39–#40 |
 | **v0.6.0** ChatGPT tunnel | [#45](https://github.com/Bmsandoval/worldkeep/issues/45) | ✅ #42–#44 |
-
-**Next:** live multi-chat playtest per [docs/playtest-notes.md](./docs/playtest-notes.md); then MVP planning ([docs/mvp.md](./docs/mvp.md)).
 
 ---
 
@@ -89,6 +98,9 @@ worldkeep/
   scripts/
     create_github_issues.py
     realign_github_issues.py
+    realign_mvp_github_issues.py
+    playtest-mcp.sh
+    playtest-stdio.sh
     tunnel.sh
   mcp/
     cmd/worldkeep-mcp/       ← stdio (Cursor)
@@ -122,7 +134,8 @@ git pull origin develop
 | Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
 | MCP stdio server (Cursor) | ✅ `make mcp` |
 | MCP HTTP + tunnel (ChatGPT) | ✅ `make mcp-http` / `scripts/tunnel.sh` |
-| Live multi-chat playtest | 📋 [docs/playtest-notes.md](./docs/playtest-notes.md) |
+| Live multi-chat playtest | ✅ [docs/playtest-notes.md](./docs/playtest-notes.md) |
+| MVP issue queue (v0.7.0+) | ✅ #64–#79 |
 
 ---
 
