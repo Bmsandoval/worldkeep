@@ -6,9 +6,18 @@ WorldKeep is a continuity layer between AI and long-running campaigns. It stores
 
 ## Status
 
-**POC planning complete — no application code yet.** Start here: [HANDOFF.md](./HANDOFF.md)
+**POC code complete** — planning docs in [docs/](./docs/), implementation through v0.6.0 on `develop`.
 
 Product spec: [docs/](./docs/) (supersedes earlier bootstrap planning in git history).
+
+## Quick start
+
+```bash
+make seed
+make test
+make mcp        # stdio — Cursor
+make mcp-http   # HTTP — ChatGPT via scripts/tunnel.sh
+```
 
 ## Quick concept
 
