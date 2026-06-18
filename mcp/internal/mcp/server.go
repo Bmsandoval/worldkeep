@@ -76,10 +76,16 @@ func (s *Server) initializeResult(params json.RawMessage) map[string]any {
 }
 
 func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage) (map[string]any, *rpcError) {
-	_ = ctx
-	_ = name
-	_ = args
-	return toolResultError("tool not implemented yet"), nil
+	switch name {
+	case "get_campaign_overview":
+		return s.handleGetCampaignOverview(ctx, args)
+	case "get_entity":
+		return s.handleGetEntity(ctx, args)
+	case "search_world":
+		return s.handleSearchWorld(ctx, args)
+	default:
+		return toolResultError("tool not implemented yet: " + name), nil
+	}
 }
 
 func (s *Server) RunStdio(in io.Reader, out io.Writer) error {
