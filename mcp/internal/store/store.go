@@ -317,3 +317,77 @@ FROM rulings WHERE campaign_id = ? ORDER BY created_at`, campaignID)
 	}
 	return out, rows.Err()
 }
+
+func (s *Store) GetRecentEvents(ctx context.Context, campaignID string, limit int) ([]Event, error) {
+	if limit <= 0 {
+		limit = 10
+	}
+	rows, err := s.db.QueryContext(ctx, `
+SELECT id, campaign_id, session_id, title, summary, entity_ids, created_at
+FROM events
+WHERE campaign_id = ?
+ORDER BY created_at DESC
+LIMIT ?`, campaignID, limit)
+	if err != nil {
+		return nil, fmt.Errorf("get recent events: %w", err)
+	}
+	defer rows.Close()
+
+	var out []Event
+	for rows.Next() {
+		var ev Event
+		var entityIDs string
+		if err := rows.Scan(&ev.ID, &ev.CampaignID, &ev.SessionID, &ev.Title, &ev.Summary, &entityIDs, &ev.CreatedAt); err != nil {
+			return nil, fmt.Errorf("scan event: %w", err)
+		}
+		ev.EntityIDs = json.RawMessage(entityIDs)
+		out = append(out, ev)
+	}
+	return out, rows.Err()
+}
+
+func (s *Store) ListActivePlots(ctx context.Context, campaignID string) ([]Entity, error) {
+	plots, err := s.ListEntitiesByType(ctx, campaignID, "plot")
+	if err != nil {
+		return nil, err
+	}
+	var active []Entity
+	for _, p := range plots {
+		var data map[string]any
+		if err := json.Unmarshal(p.Data, &data); err != nil {
+			continue
+		}
+		status, _ := data["status"].(string)
+		if status == "" || status == "active" {
+			active = append(active, p)
+		}
+	}
+	return active, nil
+}
+
+func (s *Store) SearchRulings(ctx context.Context, campaignID, query string, limit int) ([]Ruling, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	pattern := "%" + strings.TrimSpace(query) + "%"
+	rows, err := s.db.QueryContext(ctx, `
+SELECT id, campaign_id, question, answer, scope, system, created_at
+FROM rulings
+WHERE campaign_id = ? AND (question LIKE ? OR answer LIKE ?)
+ORDER BY created_at DESC
+LIMIT ?`, campaignID, pattern, pattern, limit)
+	if err != nil {
+		return nil, fmt.Errorf("search rulings: %w", err)
+	}
+	defer rows.Close()
+
+	var out []Ruling
+	for rows.Next() {
+		var r Ruling
+		if err := rows.Scan(&r.ID, &r.CampaignID, &r.Question, &r.Answer, &r.Scope, &r.System, &r.CreatedAt); err != nil {
+			return nil, fmt.Errorf("scan ruling: %w", err)
+		}
+		out = append(out, r)
+	}
+	return out, rows.Err()
+}
