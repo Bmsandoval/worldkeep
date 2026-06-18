@@ -63,6 +63,19 @@ Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/participant-handoff.md](./do
 
 ---
 
+## GitHub issue queue (MVP — complete)
+
+| Milestone | Parent | Status |
+| --------- | ------ | ------ |
+| **v0.7.0** Campaign dashboard | [#67](https://github.com/Bmsandoval/worldkeep/issues/67) | ✅ #64–#66 |
+| **v0.8.0** Secrets + visibility | [#71](https://github.com/Bmsandoval/worldkeep/issues/71) | ✅ #68–#70 |
+| **v0.9.0** Session workspace | [#75](https://github.com/Bmsandoval/worldkeep/issues/75) | ✅ #72–#74 |
+| **v1.0.0** MVP completion | [#79](https://github.com/Bmsandoval/worldkeep/issues/79) | ✅ #76–#78 |
+
+---
+
+## GitHub issue queue (POC — complete)
+
 | Milestone | Parent | Status |
 | --------- | ------ | ------ |
 | **v0.1.0** Manual world store | [#25](https://github.com/Bmsandoval/worldkeep/issues/25) | ✅ #23–#24 |
