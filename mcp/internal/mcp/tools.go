@@ -38,6 +38,9 @@ func toolDefs() []map[string]any {
 	limit := intProp("Max results (default 10)")
 
 	return []map[string]any{
+		tool("get_campaign_dashboard",
+			"Campaign health snapshot: open session, active plots, recent events, pending approvals, continuity warnings.",
+			map[string]any{"campaign_id": campaignID, "event_limit": limit}, nil, true, false),
 		tool("get_campaign_overview",
 			"Campaign summary, active plots, and major actors.",
 			map[string]any{"campaign_id": campaignID}, nil, true, false),

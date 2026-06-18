@@ -34,6 +34,12 @@ func TestBlackportReadPathDemoPrompts(t *testing.T) {
 			want: []string{"Shadows of Blackport", "Crimson Guild"},
 		},
 		{
+			name: "campaign dashboard",
+			tool: "get_campaign_dashboard",
+			args: map[string]any{},
+			want: []string{"Shadows of Blackport", "Missing Prince", "pending_update_count"},
+		},
+		{
 			name: "who is Finn",
 			tool: "get_entity",
 			args: map[string]any{"entity_id": "npc_finn"},
