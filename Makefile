@@ -1,4 +1,6 @@
-.PHONY: test seed tidy mcp mcp-http
+.PHONY: test seed tidy mcp mcp-http setup
+
+setup: seed
 
 test:
 	cd mcp && go test ./...
