@@ -44,7 +44,7 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · Cognito + UI ✅ v1.8.0 · **PHP engine + Aurora ✅ v1.9.0** · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
+**Next recommended:** ChatGPT app directory deploy — copy in [docs/chatgpt-app-listing.md](./docs/chatgpt-app-listing.md). Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
 
 **Icebox:** Human ↔ AI seat swapping (v1.4.0–v1.6.0) — [docs/icebox.md](./docs/icebox.md)
 
