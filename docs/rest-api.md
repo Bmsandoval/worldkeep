@@ -1,25 +1,24 @@
 # WorldKeep REST API (v1.1.0)
 
-HTTP JSON API for the web UI. Shares **`internal/store`** with MCP — no duplicate canon logic.
+HTTP JSON API for the web UI and external clients. Shares **`App\Services\WorldKeep\Store`** with MCP — no duplicate canon logic.
 
-**Run locally (unified with MCP):**
+**Run locally:**
 
 ```bash
 make seed
-make serve
-# Go: http://127.0.0.1:8788 — MCP /mcp, REST /api/v1, health /healthz
-# Web UI: http://127.0.0.1:8000/app (Laravel calls Go on 127.0.0.1:8788 server-side)
+cd web && php artisan serve
+# Laravel :8000 — /app UI, /api/v1 REST, /mcp HTTP, /healthz
 ```
 
-**Production (one container, one bill):**
+**Production (one PHP container):**
 
 ```bash
 make docker-build
 docker run --rm -p 8080:80 worldkeep:local
-# Browser UI on :8080 — Apache proxies /mcp, /api, /healthz to Go on loopback
+# Browser UI, MCP, and REST on :8080 (Apache → Laravel)
 ```
 
-**Binary:** `mcp/cmd/worldkeep-serve` (preferred). `worldkeep-api` and `worldkeep-mcp-http` are thin wrappers around the same unified server.
+**Stdio MCP (Cursor):** `make mcp` → `php artisan worldkeep:mcp`
 
 ---
 
@@ -27,14 +26,11 @@ docker run --rm -p 8080:80 worldkeep:local
 
 | Variable | Default | Purpose |
 | -------- | ------- | ------- |
-| `WORLDKEEP_DATA_DIR` | `./data` | SQLite campaign files |
+| `DB_CONNECTION` | `sqlite` (local) / `pgsql` (prod) | Laravel + WorldKeep tables share one database |
 | `WORLDKEEP_CAMPAIGN_ID` | `campaign_001` (Blackport seed) | Default campaign when route omits context |
-| `WORLDKEEP_HTTP_ADDR` | `:8788` | Unified listen address (MCP + REST) |
-| `WORLDKEEP_MCP_ADDR` | *(fallback)* | Legacy alias for `WORLDKEEP_HTTP_ADDR` |
-| `WORLDKEEP_API_ADDR` | *(fallback)* | Legacy alias for `WORLDKEEP_HTTP_ADDR` |
-| `WORLDKEEP_ROLE` | `dm` | `owner` \| `dm` \| `player` — gates commit + `dm` scope |
+| `WORLDKEEP_ROLE` | `owner` | `owner` \| `dm` \| `player` — gates commit + `dm` scope |
 | `WORLDKEEP_API_TOKEN` | *(empty)* | If set, require `Authorization: Bearer <token>` on REST (MCP exempt) |
-| `WORLDKEEP_INTERNAL_URL` | `http://127.0.0.1:8788` | Laravel → Go base URL (web UI only) |
+| `WORLDKEEP_SRD_VERSION` | `srd-2014` | Open5e document filter |
 
 See [ex.env](../ex.env) and issue **#83** for auth stub details.
 
@@ -109,6 +105,6 @@ HTTP status mirrors MCP-style errors: `400`, `403`, `404`, `500`.
 
 ## Web UI integration
 
-Laravel uses `App\Services\WorldKeepClient` → `WORLDKEEP_INTERNAL_URL` (never exposed to the browser). In the unified Docker image, Apache serves PHP on `:80` and reverse-proxies `/mcp`, `/api`, and `/healthz` to Go on `127.0.0.1:8788` so **one Fargate task** hosts UI + MCP + REST.
+Laravel uses `App\Services\WorldKeepClient` → in-process `Engine` (never exposed to the browser). The Docker/Fargate image is **PHP-only** — Apache serves Laravel on `:80`; MCP and REST are Laravel routes on the same host.
 
 See [web-ui.md](./web-ui.md).

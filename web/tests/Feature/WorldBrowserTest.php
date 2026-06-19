@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\WorldKeepClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class WorldBrowserTest extends TestCase
@@ -18,13 +18,13 @@ class WorldBrowserTest extends TestCase
 
     public function test_authenticated_user_sees_entity_list(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/entities*' => Http::response([
-                'entities' => [
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('listEntities')
+                ->once()
+                ->andReturn([
                     ['id' => 'npc_finn', 'type' => 'npc', 'name' => 'Finn', 'summary' => 'Dock spy.'],
-                ],
-            ]),
-        ]);
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -37,15 +37,18 @@ class WorldBrowserTest extends TestCase
 
     public function test_authenticated_user_sees_entity_detail(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/entities/npc_finn*' => Http::response([
-                'id' => 'npc_finn',
-                'type' => 'npc',
-                'name' => 'Finn',
-                'summary' => 'Dock spy.',
-                'data' => ['role' => 'informant'],
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('getEntity')
+                ->once()
+                ->with('npc_finn')
+                ->andReturn([
+                    'id' => 'npc_finn',
+                    'type' => 'npc',
+                    'name' => 'Finn',
+                    'summary' => 'Dock spy.',
+                    'data' => ['role' => 'informant'],
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -58,12 +61,15 @@ class WorldBrowserTest extends TestCase
 
     public function test_search_shows_matching_entities(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/search*' => Http::response([
-                'entities' => [['id' => 'npc_finn', 'type' => 'npc', 'name' => 'Finn', 'summary' => 'Spy.']],
-                'facts' => [],
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('searchWorld')
+                ->once()
+                ->with('Finn')
+                ->andReturn([
+                    'entities' => [['id' => 'npc_finn', 'type' => 'npc', 'name' => 'Finn', 'summary' => 'Spy.']],
+                    'facts' => [],
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -86,18 +92,18 @@ class SessionTimelineTest extends TestCase
 
     public function test_authenticated_user_sees_session_list(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/sessions*' => Http::response([
-                'sessions' => [
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('listSessions')
+                ->once()
+                ->andReturn([
                     [
                         'id' => 'session_abc',
                         'title' => 'Dockside intrigue',
                         'status' => 'closed',
                         'started_at' => '2026-06-01',
                     ],
-                ],
-            ]),
-        ]);
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -110,23 +116,26 @@ class SessionTimelineTest extends TestCase
 
     public function test_authenticated_user_sees_session_timeline(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/sessions/session_abc' => Http::response([
-                'session' => [
-                    'id' => 'session_abc',
-                    'title' => 'Dockside intrigue',
-                    'status' => 'closed',
-                    'started_at' => '2026-06-01',
-                    'summary' => 'The party met Finn.',
-                ],
-                'events' => [
-                    ['id' => 'ev_1', 'title' => 'Harbor meeting', 'summary' => 'Finn shared a rumor.', 'created_at' => '2026-06-01'],
-                ],
-                'modified_entities' => [
-                    ['entity_id' => 'npc_finn', 'change_op' => 'add_fact', 'created_at' => '2026-06-01'],
-                ],
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('getSession')
+                ->once()
+                ->with('session_abc')
+                ->andReturn([
+                    'session' => [
+                        'id' => 'session_abc',
+                        'title' => 'Dockside intrigue',
+                        'status' => 'closed',
+                        'started_at' => '2026-06-01',
+                        'summary' => 'The party met Finn.',
+                    ],
+                    'events' => [
+                        ['id' => 'ev_1', 'title' => 'Harbor meeting', 'summary' => 'Finn shared a rumor.', 'created_at' => '2026-06-01'],
+                    ],
+                    'modified_entities' => [
+                        ['entity_id' => 'npc_finn', 'change_op' => 'add_fact', 'created_at' => '2026-06-01'],
+                    ],
+                ]);
+        });
 
         $user = User::factory()->create();
 

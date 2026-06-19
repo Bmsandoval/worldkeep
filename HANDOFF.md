@@ -1,6 +1,6 @@
 # WorldKeep — Handoff
 
-_Last updated: 2026-06-19 (v1.8.0 deployable MVP tagged)_
+_Last updated: 2026-06-19 (v1.9.0 — PHP engine + Aurora prod)_
 
 **Starting point for a new session.** Read this first, then [AGENTS.md](./AGENTS.md) and the active GitHub issue.
 
@@ -40,9 +40,9 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: Deployable MVP (v1.8.0 tagged) — live at `worldkeep.bsandoval.dev`** — see [docs/deploy.md](./docs/deploy.md)
+**Active phase: v1.9.0 — PHP-only engine on Aurora at `worldkeep.bsandoval.dev`** — see [docs/deploy.md](./docs/deploy.md)
 
-POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · **Prod UI + Cognito ✅ v1.8.0** · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
+POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · Cognito + UI ✅ v1.8.0 · **PHP engine + Aurora ✅ v1.9.0** · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
 **Next recommended:** Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
 
@@ -119,31 +119,20 @@ worldkeep/
   docs/                   ← product spec (source of truth)
   docs/workflow/          ← issue/PR process (not product spec)
   scripts/
-    serve.sh                 ← local Go + Laravel (two ports)
     create_github_issues.py
     realign_github_issues.py
     realign_mvp_github_issues.py
     realign_post_mvp_github_issues.py
-    playtest-mcp.sh
-    playtest-stdio.sh
-    tunnel.sh
-  web/                       ← Laravel UI (dashboard + approvals)
-  Dockerfile                 ← Apache + Go on one container (:80)
-  mcp/
-    cmd/worldkeep-serve/     ← unified MCP + REST (preferred)
-    cmd/worldkeep-mcp/       ← stdio (Cursor)
-    cmd/worldkeep-mcp-http/  ← alias → unified server
-    cmd/worldkeep-api/       ← alias → unified server
-    internal/store/          ← SQLite campaign store
-    internal/mcp/            ← MCP protocol + tools
-    internal/api/            ← REST handlers (shares store)
+  web/                       ← Laravel UI + Engine + MCP + REST
+    app/Services/WorldKeep/  ← Store, Engine, MCP handlers, Open5e
+  Dockerfile                 ← PHP-only Apache container (:80)
 ```
 
 ---
 
 ## Git state
 
-**Local `develop` head:** after merge of deployable MVP PR — tag **`v1.8.0`** (Cognito Hosted UI + prod styling).
+**Local `develop` head:** v1.9.0 — PHP engine (Store/Engine/MCP in Laravel), Aurora prod, Go `mcp/` removed.
 
 Integration branch: `develop` only (no `main` yet).
 
@@ -161,14 +150,15 @@ git pull origin develop
 | Product thesis, roadmap, entity model, MCP spec | ✅ [docs/](./docs/) |
 | POC design (scope, schema, demo scenario) | ✅ [docs/poc.md](./docs/poc.md) |
 | GitHub issues (v0.1.0–v0.6.0 POC queue) | ✅ implemented (#23–#44) |
-| Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
-| MCP stdio server (Cursor) | ✅ `make mcp` |
-| Campaign seats / handoff (v1.4–v1.5 prototype) | ⚪ **Icebox** — MCP exists on `develop`; not active direction — [docs/icebox.md](./docs/icebox.md) |
-| MCP HTTP + tunnel (ChatGPT) | ✅ `make serve` or Docker — `/mcp` proxied on same host as UI |
-| REST API (v1.1.0) | ✅ unified in `worldkeep-serve` — [docs/rest-api.md](./docs/rest-api.md) |
-| Laravel web UI (v1.2.0 WIP) | ✅ dashboard + approvals under `web/` — `make serve` |
+| Go store + SQLite + Blackport seed | ✅ `make seed` / `php artisan test` |
+| MCP stdio server (Cursor) | ✅ `make mcp` → `php artisan worldkeep:mcp` |
+| Campaign seats / handoff (v1.4–v1.5 prototype) | ⚪ **Icebox** — MCP tools exist in PHP; not active direction — [docs/icebox.md](./docs/icebox.md) |
+| MCP HTTP + tunnel (ChatGPT) | ✅ Docker/Fargate — `POST /mcp` on same host as UI |
+| REST API (v1.1.0) | ✅ Laravel routes — [docs/rest-api.md](./docs/rest-api.md) |
+| Laravel web UI (v1.2.0+) | ✅ dashboard + approvals under `web/` |
 | World browser + sessions (v1.3.0) | ✅ entity browse/search + session timeline UI |
-| Single-service deploy | ✅ `Dockerfile` — Apache :80 + Go loopback :8788 |
+| Single-service deploy | ✅ `Dockerfile` — PHP-only Apache :80 |
+| Aurora prod persistence | ✅ hub-prod `worldkeep` database |
 | Open5e SRD tools (v1.7.0) | ✅ 7 tools — rules, spells, creatures, conditions — [docs/open5e-integration.md](./docs/open5e-integration.md) |
 | MVP MCP tools (v0.7.0–v1.0.0) | ✅ core continuity tools — dashboard, secrets, session workspace, import, roles |
 | Live multi-chat playtest | ✅ [docs/playtest-notes.md](./docs/playtest-notes.md) |
@@ -179,11 +169,11 @@ git pull origin develop
 
 | Area | Choice |
 | ---- | ------ |
-| Language | **Go** |
-| Storage | **SQLite** (Postgres optional for hosted later) — see [docs/poc.md](./docs/poc.md) §11 |
-| MCP (Cursor) | stdio |
-| MCP (ChatGPT) | Streamable HTTP + tunnel (after POC read path works) |
-| Auth | None (local single-user) |
+| Runtime | **Laravel (PHP 8.4)** |
+| Storage | **SQLite** (local) · **Aurora PostgreSQL** (hub-prod) |
+| MCP (Cursor) | stdio — `php artisan worldkeep:mcp` |
+| MCP (ChatGPT) | Streamable HTTP `POST /mcp` |
+| Auth | Cognito Hosted UI (prod) |
 
 **Reference:** MCP HTTP shape → [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp)
 
@@ -208,9 +198,9 @@ Details: [docs/poc.md](./docs/poc.md) §7–§14. Demo scenario: *Shadows of Bla
 ## New session quick start
 
 1. Read this file + [AGENTS.md](./AGENTS.md) + [docs/poc.md](./docs/poc.md).
-2. Run `make test-all && make seed` — local stack: `make serve` ([docs/deploy.md](./docs/deploy.md)).
+2. Run `make seed && make test-all` — local stack: `make serve` ([docs/deploy.md](./docs/deploy.md)).
 3. Branch from `develop`; implement only agreed scope.
-4. `make test-all` before PR (Go + Laravel).
+4. `make test-all` before PR (PHPUnit).
 5. Open PR to `develop`; **do not merge** unless maintainer explicitly asks.
 
 Process: [docs/workflow/prototype-workflow.md](./docs/workflow/prototype-workflow.md).

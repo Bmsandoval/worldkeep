@@ -48,16 +48,15 @@ gh issue list --repo Bmsandoval/worldkeep --state open
 
 | Area | Choice |
 | ---- | ------ |
-| **Language** | **Go** — MCP server, REST API, storage, tests |
-| **Web UI** | **Laravel** in `web/` — dashboard + approvals (v1.2+) |
-| **Storage** | **SQLite** for local POC (Postgres optional later) |
-| **HTTP (unified)** | **`worldkeep-serve`** — MCP + REST on one port (`WORLDKEEP_HTTP_ADDR`) |
-| **MCP (local)** | **stdio** for Cursor (`make mcp`) |
-| **MCP (ChatGPT)** | HTTP `/mcp` + tunnel or Docker single host |
-| **Deploy** | **One container** — Apache + Go loopback ([docs/deploy.md](./docs/deploy.md)) |
-| **Auth** | Laravel session (UI); optional `WORLDKEEP_API_TOKEN` for REST |
+| **Runtime** | **Laravel (PHP 8.4)** — UI, MCP, REST API, storage |
+| **Engine** | `App\Services\WorldKeep\` — Store, Engine, MCP handlers |
+| **Storage** | **SQLite** locally; **Aurora PostgreSQL** in hub-prod (shared DB for Laravel + campaign tables) |
+| **MCP (local)** | **stdio** — `make mcp` → `php artisan worldkeep:mcp` |
+| **MCP (ChatGPT)** | HTTP `POST /mcp` on same host as UI |
+| **Deploy** | **One PHP container** — Apache :80 ([docs/deploy.md](./docs/deploy.md)) |
+| **Auth** | Cognito Hosted UI (prod); optional `WORLDKEEP_API_TOKEN` for REST |
 
-Pattern: follow [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp) for remote HTTP shape.
+Pattern: MCP HTTP shape follows [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp).
 
 ---
 

@@ -1,28 +1,19 @@
-.PHONY: test test-all seed tidy mcp mcp-http api serve setup web-install web-test docker-build backfill-seats playtest-handoff
+.PHONY: test test-all seed tidy mcp serve setup web-install web-test docker-build backfill-seats playtest-handoff
 
 setup: seed web-install
 
-test:
-	cd mcp && go test ./...
+test: web-test
 
-test-all: test web-test
+test-all: web-test
 
 seed:
-	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/seed
+	cd web && php artisan worldkeep:seed
 
-# Unified Go process — MCP + REST on one port (preferred)
 serve:
-	@chmod +x scripts/serve.sh
-	./scripts/serve.sh
+	cd web && php artisan serve
 
 mcp:
-	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/worldkeep-mcp
-
-mcp-http:
-	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/worldkeep-mcp-http
-
-api:
-	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/worldkeep-api
+	cd web && php artisan worldkeep:mcp
 
 web-install:
 	cd web && composer install
@@ -34,11 +25,8 @@ docker-build:
 	docker build -t worldkeep:local .
 
 backfill-seats:
-	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/backfill-seats
+	cd web && php artisan worldkeep:seed
 
 playtest-handoff:
 	@chmod +x scripts/playtest-handoff.sh
 	./scripts/playtest-handoff.sh
-
-tidy:
-	cd mcp && go mod tidy
