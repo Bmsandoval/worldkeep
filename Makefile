@@ -1,4 +1,4 @@
-.PHONY: test test-all seed tidy mcp mcp-http api serve setup web-install web-test docker-build
+.PHONY: test test-all seed tidy mcp mcp-http api serve setup web-install web-test docker-build backfill-seats
 
 setup: seed web-install
 
@@ -32,6 +32,9 @@ web-test:
 
 docker-build:
 	docker build -t worldkeep:local .
+
+backfill-seats:
+	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/backfill-seats
 
 tidy:
 	cd mcp && go mod tidy

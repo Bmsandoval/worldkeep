@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const currentSchemaVersion = 2
+const currentSchemaVersion = 3
 
 func (s *Store) Migrate(ctx context.Context) error {
 	if _, err := s.db.ExecContext(ctx, schemaSQL); err != nil {
@@ -28,6 +28,10 @@ func (s *Store) Migrate(ctx context.Context) error {
 		case 2:
 			if err := s.migrateToV2(ctx); err != nil {
 				return fmt.Errorf("migrate v2: %w", err)
+			}
+		case 3:
+			if err := s.migrateToV3(ctx); err != nil {
+				return fmt.Errorf("migrate v3: %w", err)
 			}
 		default:
 			return fmt.Errorf("unknown schema version %d", v)
@@ -59,6 +63,24 @@ CREATE TABLE IF NOT EXISTS campaign_roles (
     campaign_id TEXT PRIMARY KEY REFERENCES campaigns(id) ON DELETE CASCADE,
     role TEXT NOT NULL DEFAULT 'owner'
 );`)
+	return err
+}
+
+func (s *Store) migrateToV3(ctx context.Context) error {
+	_, err := s.db.ExecContext(ctx, `
+CREATE TABLE IF NOT EXISTS campaign_seats (
+    id TEXT PRIMARY KEY,
+    campaign_id TEXT NOT NULL REFERENCES campaigns(id) ON DELETE CASCADE,
+    seat_type TEXT NOT NULL,
+    controller TEXT NOT NULL DEFAULT 'ai',
+    controller_user_id TEXT,
+    actor_id TEXT REFERENCES entities(id) ON DELETE SET NULL,
+    display_name TEXT NOT NULL DEFAULT '',
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+CREATE INDEX IF NOT EXISTS idx_campaign_seats_campaign ON campaign_seats(campaign_id);`)
 	return err
 }
 

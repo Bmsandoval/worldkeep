@@ -100,5 +100,5 @@ func Blackport(ctx context.Context, s *store.Store) error {
 		return err
 	}
 
-	return nil
+	return EnsureDemoSeats(ctx, s, DemoCampaignID)
 }
