@@ -17,12 +17,12 @@ The MCP server remains the AI integration path. The UI talks to a **REST API** t
 ```text
 One service (local Docker / Fargate task):
   Apache :80 — Laravel Blade UI (/app/*)
-    reverse proxy /mcp, /api, /healthz → Go 127.0.0.1:8788
-  Go worldkeep-serve — MCP + REST + SQLite (shared store)
+    + /mcp, /api, /healthz served in-process by the same Laravel app
+  WorldKeep engine — MCP + REST + SQLite, in-process (App\Services\WorldKeep)
   Cursor / ChatGPT → /mcp (same host as UI when deployed)
 ```
 
-Laravel never duplicates canon logic — it calls the Go engine server-side via `WORLDKEEP_INTERNAL_URL`.
+Laravel never duplicates canon logic — the engine runs in-process (`App\Services\WorldKeep\Engine`), called server-side.
 
 ## 4. UI surfaces (from [mvp.md](./mvp.md) §16)
 
@@ -56,10 +56,10 @@ Parallel work: Phase 3 **party actor** MCP (personalities, `prepare_actor_contex
 
 | Layer | Default | Notes |
 | ----- | ------- | ----- |
-| Engine | `worldkeep-serve` — MCP + REST on one port | Reuse `internal/store` |
+| Engine | In-process PHP engine (`App\Services\WorldKeep`) — MCP + REST | Shares the Laravel SQLite store |
 | Frontend | Laravel kit in `web/` | Dashboard + approval queue (v1.2) |
 | Auth | Local session (Laravel) + optional `WORLDKEEP_API_TOKEN` for REST | Full OAuth deferred |
-| Deploy | **Single Dockerfile** — Apache + Go sidecar-in-process | No second Fargate service for MCP |
+| Deploy | **Single Dockerfile** — Apache + PHP, engine in-process | No second Fargate service for MCP |
 
 ## 7. Success criteria
 

@@ -114,17 +114,13 @@ worldkeep/
   HANDOFF.md              ← this file (session entry point)
   AGENTS.md               ← agent rules + stack constraints
   README.md               ← public one-pager
-  ex.env                  ← env template (copy → local.env when code lands)
   data/                   ← campaign DB files (gitignored except .gitkeep)
   docs/                   ← product spec (source of truth)
   docs/workflow/          ← issue/PR process (not product spec)
-  scripts/
-    create_github_issues.py
-    realign_github_issues.py
-    realign_mvp_github_issues.py
-    realign_post_mvp_github_issues.py
   web/                       ← Laravel UI + Engine + MCP + REST
+    .env.example             ← env template (copy → web/.env)
     app/Services/WorldKeep/  ← Store, Engine, MCP handlers, Open5e
+    app/Console/Commands/    ← worldkeep:mcp (stdio), worldkeep:seed
   Dockerfile                 ← PHP-only Apache container (:80)
 ```
 

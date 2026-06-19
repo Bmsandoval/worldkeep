@@ -1,0 +1,226 @@
+diff --git a/AGENTS.md b/AGENTS.md
+index 9959d28..c7adb74 100644
+--- a/AGENTS.md
++++ b/AGENTS.md
+@@ -62,14 +62,18 @@ Pattern: MCP HTTP shape follows [timelord/mcp](https://github.com/Bmsandoval/tim
+ 
+ ## Hard rules for the play agent (MCP server instructions)
+ 
++Canonical text: `web/app/Services/WorldKeep/Mcp/Instructions.php` (returned as MCP `instructions` on `initialize`).
++
+ When WorldKeep is connected, the client LLM must:
+ 
+-1. Call **context retrieval** (`compile_scene_context` / `get_relevant_context`) before narrating during active play.
+-2. Use **propose → commit** update flow for canon changes — not silent overwrites.
+-3. **Not contradict** stored canon without an explicit update tool call.
+-4. Treat tool output as **raw data** — WorldKeep stores; the LLM narrates.
++1. **New campaign:** `start_session` → `propose_world_update` (entities/plots/facts) → `commit_world_update` — not `record_event` alone.
++2. **Resume:** `get_campaign_dashboard` / `prepare_session_brief` before narrating.
++3. Call **context retrieval** (`compile_scene_context` / dashboard tools) before narrating during active play.
++4. Use **propose → commit** for durable canon — `record_event` is timeline only.
++5. **Not contradict** stored canon without an explicit update tool call.
++6. Treat tool output as **raw data** — WorldKeep stores; the LLM narrates.
+ 
+-Session flow: [docs/session-lifecycle.md](./docs/session-lifecycle.md). Context pipeline: [docs/context-pipeline.md](./docs/context-pipeline.md).
++ChatGPT DM bootstrap detail: [docs/chatgpt-dm-bootstrap.md](./docs/chatgpt-dm-bootstrap.md).
+ 
+ ---
+ 
+diff --git a/docs/chatgpt-dm-bootstrap.md b/docs/chatgpt-dm-bootstrap.md
+new file mode 100644
+index 0000000..6bca9ef
+--- /dev/null
++++ b/docs/chatgpt-dm-bootstrap.md
+@@ -0,0 +1,46 @@
++# ChatGPT AI DM — campaign bootstrap
++
++Why a "new campaign" can look broken in the UI, and what the MCP client should do instead.
++
++## What you saw
++
++Asking ChatGPT to *start a new campaign* may produce **one line in Recent Events** (from `record_event`) but nothing else on the dashboard — no open session, no new plots, no world entries.
++
++That is expected if the model only called `record_event`. Events are a **timeline**, not the world graph.
++
++## What actually gets stored where
++
++| What | Tool | Shows in UI as |
++|------|------|----------------|
++| Opening pitch / "what happened" beat | `record_event` | Recent events |
++| Play session | `start_session` | Open session card |
++| Locations, NPCs, factions, plots | `propose_world_update` → `commit_world_update` | Active plots, World browser |
++| Facts on entities | `add_fact` in world update | Search / entity detail |
++| Bulk notes | `import_campaign_markdown` → commit | World browser |
++
++## Required bootstrap sequence (AI DM)
++
++The MCP server returns these steps in **`instructions`** on `initialize` (system-level guidance for ChatGPT). Summary:
++
++1. `start_session`
++2. `propose_world_update` — at minimum: starting **location**, one **plot** (`status: active`), PC/party **npc** entities, key **facts**
++3. `commit_world_update` — immediately (ChatGPT has no approval queue)
++4. `record_event` — optional, for the opening beat
++5. `get_campaign_dashboard` — verify before narrating
++
++## Resume flow
++
++1. `prepare_session_brief` or `get_campaign_dashboard`
++2. `start_session` if none open
++3. `compile_scene_context` before the next scene
++
++## Hosted prod note
++
++Production uses `campaign_001` with optional demo seed (Blackport). A "new" campaign adds entities alongside that data until we ship per-user campaigns or a reset tool. The dashboard title may still say the seed name until campaign metadata is updated.
++
++## Code
++
++- Instructions: `web/app/Services/WorldKeep/Mcp/Instructions.php`
++- Tool blurbs: `web/app/Services/WorldKeep/Mcp/ToolDefinitions.php`
++
++After changing instructions, redeploy so ChatGPT re-initializes the connector.
+diff --git a/web/app/Services/WorldKeep/Mcp/Instructions.php b/web/app/Services/WorldKeep/Mcp/Instructions.php
+index 138c8bc..47d2aeb 100644
+--- a/web/app/Services/WorldKeep/Mcp/Instructions.php
++++ b/web/app/Services/WorldKeep/Mcp/Instructions.php
+@@ -5,16 +5,49 @@
+ final class Instructions
+ {
+     public const SERVER = <<<'TEXT'
+-WorldKeep is a campaign continuity engine for AI-assisted tabletop RPGs.
++WorldKeep is a campaign continuity engine for AI-assisted tabletop RPGs. You are the DM/narrator; WorldKeep is the persistent memory. What you establish in play must be written with tools — narration alone does not update the database.
++
++=== CRITICAL — Starting a new campaign ===
++
++When the player asks to start a new campaign, session zero, or a fresh adventure, do NOT stop after record_event. A lone event only appears under Recent Events; it does not create the world (no locations, NPCs, plots, or open session on the dashboard).
++
++Before your first in-character narration, run this bootstrap sequence in order (same turn):
++
++1. start_session — title like "Session 1: <campaign hook>" and notes with tone, system, and advancement rules the player agreed to.
++2. propose_world_update — create structured canon. Minimum:
++   - location: starting place / world anchor
++   - plot: at least one active plot (status active in entity data)
++   - npc: PC(s) or party hook characters as needed
++   - add_fact ops for table agreements (advancement model, genre, key constraints)
++   Use create_entity with types: location, npc, faction, plot. Entity data is JSON (e.g. {"status":"active"} for plots).
++3. commit_world_update — apply each pending update immediately. In ChatGPT play there is no human approval queue; committed canon is what the UI and future chats read.
++4. record_event — optional timeline entry for the opening beat (supplements entities; does not replace step 2).
++5. get_campaign_dashboard — verify open session, active plots, and entities exist before narrating.
++
++Bulk setup alternative: import_campaign_markdown with ## type: Name headings, then commit_world_update.
++
++Hosted WorldKeep defaults to campaign_id campaign_001. Demo seed data (e.g. Blackport) may still appear until your new entities exist; do not assume an empty world.
++
++=== CRITICAL — Resuming a campaign ===
++
++When the player continues, returns, or asks "where were we?":
++
++1. get_campaign_dashboard or prepare_session_brief FIRST — read open session, active plots, recent events, pending updates.
++2. If no open session, start_session before play.
++3. compile_scene_context (or get_campaign_overview) before narrating the next scene.
++4. During play: propose_world_update then commit_world_update for durable canon (NPC status, new facts, plot progress) — not record_event alone.
++
++=== Active play ===
+ 
+-Hard rules during active play:
+ 1. Call context retrieval (prepare_session_brief, get_campaign_dashboard, compile_scene_context, or get_campaign_overview) BEFORE narrating.
+ 2. Default to party scope — use scope=dm only for DM-only prep (never for player-facing narration).
+-3. Use propose_world_update → commit_world_update for canon changes — never silently overwrite stored facts.
+-4. Do not contradict stored canon without an explicit update tool call.
+-5. Treat tool output as raw structured data — WorldKeep stores; you narrate.
++3. Durable world state (entities, facts, plot status) → propose_world_update → commit_world_update in the same turn when you narrate it as true.
++4. record_event — timeline beats and session log; does not replace entity/fact updates.
++5. Do not contradict stored canon without an explicit update tool call.
++6. Treat tool output as raw structured data — WorldKeep stores; you narrate.
++
++=== Rules & mechanics precedence ===
+ 
+-Rules & mechanics precedence (always in this order):
+ 1. search_rulings and stored campaign facts — table canon wins over book text.
+ 2. WorldKeep Open5e tools — SRD mechanics (no auth; filtered by WORLDKEEP_SRD_VERSION):
+    - search_rules_reference / get_rules_section — rules chapters
+diff --git a/web/app/Services/WorldKeep/Mcp/ToolDefinitions.php b/web/app/Services/WorldKeep/Mcp/ToolDefinitions.php
+index 1f9e55b..99cf15f 100644
+--- a/web/app/Services/WorldKeep/Mcp/ToolDefinitions.php
++++ b/web/app/Services/WorldKeep/Mcp/ToolDefinitions.php
+@@ -19,7 +19,7 @@ public static function all(): array
+                 'Campaign health snapshot: open session, active plots, recent events, pending approvals, continuity warnings.',
+                 ['campaign_id' => $campaignId, 'event_limit' => $limit, 'scope' => $scope], null, true, false),
+             self::tool('prepare_session_brief',
+-                'Focused session prep — active plots, recent events, open session, pending approvals, continuity warnings.',
++                'Session prep snapshot — use when resuming a campaign or before session 1 after bootstrap.',
+                 ['campaign_id' => $campaignId, 'event_limit' => $limit, 'scope' => $scope], null, true, false),
+             self::tool('get_campaign_overview',
+                 'Campaign summary, active plots, and major actors.',
+@@ -51,7 +51,7 @@ public static function all(): array
+                 ['campaign_id' => $campaignId, 'query' => self::strProp('Search text'), 'limit' => $limit],
+                 ['query'], true, false),
+             self::tool('propose_world_update',
+-                'Propose canon changes for DM approval.',
++                'Propose canon changes (create_entity, update_entity, add_fact). Required for new campaigns and durable world state — not optional if you narrated it as true. Follow with commit_world_update in ChatGPT play.',
+                 [
+                     'campaign_id' => $campaignId,
+                     'changes' => self::objProp('JSON array of change objects'),
+@@ -61,7 +61,7 @@ public static function all(): array
+                 'List pending canon update proposals.',
+                 ['campaign_id' => $campaignId], null, true, false),
+             self::tool('commit_world_update',
+-                'Apply a pending update after DM approval.',
++                'Apply a pending update to canon. Call immediately after propose_world_update during ChatGPT DM play (no human approval step).',
+                 ['update_id' => self::strProp('Pending update id')], ['update_id'], false, true),
+             self::tool('reject_world_update',
+                 'Reject a pending update.',
+@@ -72,7 +72,7 @@ public static function all(): array
+                 ['campaign_id' => $campaignId, 'changes' => self::objProp('Proposed changes JSON')],
+                 ['changes'], true, false),
+             self::tool('start_session',
+-                'Open a new play session.',
++                'Open a play session. Required when starting a new campaign or resuming without an open session.',
+                 ['campaign_id' => $campaignId, 'title' => self::strProp('Session title'), 'notes' => self::strProp('Optional session notes')],
+                 null, false, false),
+             self::tool('get_session',
+@@ -88,7 +88,7 @@ public static function all(): array
+                     'reason' => self::strProp('Reason for proposed changes'),
+                 ], null, false, false),
+             self::tool('record_event',
+-                'Record a campaign event (via active session when set).',
++                'Timeline log entry for what happened. Does NOT create locations, NPCs, or plots — use propose_world_update + commit_world_update for durable canon.',
+                 [
+                     'campaign_id' => $campaignId,
+                     'session_id' => self::strProp('Session id (optional)'),
+@@ -113,7 +113,7 @@ public static function all(): array
+                     'reason' => self::strProp('Why this secret should be stored'),
+                 ], ['title'], false, false),
+             self::tool('import_campaign_markdown',
+-                'Parse Markdown headings into entity proposals for DM approval.',
++                'Parse Markdown (## type: Name headings) into entity proposals. Use at campaign start for bulk setup; then commit_world_update.',
+                 [
+                     'campaign_id' => $campaignId,
+                     'markdown' => self::strProp('Markdown notes (## headings)'),
+diff --git a/web/tests/Unit/Services/WorldKeep/Mcp/InstructionsTest.php b/web/tests/Unit/Services/WorldKeep/Mcp/InstructionsTest.php
+new file mode 100644
+index 0000000..f670d13
+--- /dev/null
++++ b/web/tests/Unit/Services/WorldKeep/Mcp/InstructionsTest.php
+@@ -0,0 +1,22 @@
++<?php
++
++namespace Tests\Unit\Services\WorldKeep\Mcp;
++
++use App\Services\WorldKeep\Mcp\Instructions;
++use PHPUnit\Framework\TestCase;
++
++class InstructionsTest extends TestCase
++{
++    public function test_server_instructions_cover_campaign_bootstrap_and_resume(): void
++    {
++        $text = Instructions::SERVER;
++
++        $this->assertStringContainsString('CRITICAL — Starting a new campaign', $text);
++        $this->assertStringContainsString('do NOT stop after record_event', $text);
++        $this->assertStringContainsString('propose_world_update', $text);
++        $this->assertStringContainsString('commit_world_update', $text);
++        $this->assertStringContainsString('start_session', $text);
++        $this->assertStringContainsString('CRITICAL — Resuming a campaign', $text);
++        $this->assertStringContainsString('get_campaign_dashboard', $text);
++    }
++}

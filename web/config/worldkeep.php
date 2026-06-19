@@ -32,11 +32,4 @@ return [
     'open5e' => [
         'base_url' => env('WORLDKEEP_OPEN5E_BASE_URL', 'https://api.open5e.com/v2'),
     ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Legacy internal URL (unused when Engine runs in-process)
-    |--------------------------------------------------------------------------
-    */
-    'internal_url' => rtrim(env('WORLDKEEP_INTERNAL_URL', 'http://127.0.0.1:8788'), '/'),
 ];

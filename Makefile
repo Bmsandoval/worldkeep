@@ -1,4 +1,4 @@
-.PHONY: test test-all seed tidy mcp serve setup web-install web-test docker-build backfill-seats playtest-handoff
+.PHONY: test test-all seed tidy mcp serve setup web-install web-test docker-build
 
 setup: seed web-install
 
@@ -23,10 +23,3 @@ web-test:
 
 docker-build:
 	docker build -t worldkeep:local .
-
-backfill-seats:
-	cd web && php artisan worldkeep:seed
-
-playtest-handoff:
-	@chmod +x scripts/playtest-handoff.sh
-	./scripts/playtest-handoff.sh

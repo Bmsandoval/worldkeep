@@ -224,8 +224,14 @@ class Store
         $sql = '
             SELECT id, campaign_id, type, name, summary, data, created_at, updated_at
             FROM entities
-            WHERE campaign_id = ? AND type = ?';
-        $bindings = [$campaignId, $entityType];
+            WHERE campaign_id = ?';
+        $bindings = [$campaignId];
+
+        // An empty type means "all types" (e.g. the World browser's "All" tab).
+        if ($entityType !== '') {
+            $sql .= ' AND type = ?';
+            $bindings[] = $entityType;
+        }
 
         if (! $scope->includesDmOnly()) {
             $sql .= " AND type != 'secret'";
@@ -236,21 +242,6 @@ class Store
         return array_map(
             static fn (object $row) => Entity::fromRow($row),
             DB::select($sql, $bindings)
-        );
-    }
-
-    /**
-     * @return list<Ruling>
-     */
-    public function listRulings(string $campaignId): array
-    {
-        return array_map(
-            static fn (object $row) => Ruling::fromRow($row),
-            DB::select(
-                'SELECT id, campaign_id, question, answer, scope, system, created_at
-                 FROM rulings WHERE campaign_id = ? ORDER BY created_at',
-                [$campaignId]
-            )
         );
     }
 
@@ -553,20 +544,6 @@ class Store
             events: $this->listEventsBySession($sessionId),
             modifiedEntities: $this->listSessionChanges($sessionId),
         );
-    }
-
-    public function getCampaignRole(string $campaignId): string
-    {
-        $row = DB::selectOne(
-            'SELECT role FROM campaign_roles WHERE campaign_id = ?',
-            [$campaignId]
-        );
-
-        if ($row === null) {
-            return 'owner';
-        }
-
-        return (string) $row->role;
     }
 
     public function setCampaignRole(string $campaignId, string $role): void
@@ -1188,6 +1165,12 @@ class Store
         }
     }
 
+    /**
+     * Patch an entity. The patch is a JSON object whose `name`/`summary` keys
+     * update the entity columns; `data` (if an object) and every other key are
+     * shallow-merged into the entity's `data` JSON. A flat patch such as
+     * {"attitude_to_party": -25} therefore merges into `data` as expected.
+     */
     public function patchEntity(string $id, string $patch): void
     {
         $entity = $this->getEntity($id);
@@ -1195,56 +1178,37 @@ class Store
         /** @var array<string, mixed> $fields */
         $fields = json_decode($patch, true, 512, JSON_THROW_ON_ERROR);
 
-        if (array_key_exists('name', $fields)) {
-            $entity = new Entity(
-                id: $entity->id,
-                campaignId: $entity->campaignId,
-                type: $entity->type,
-                name: is_string($fields['name']) ? $fields['name'] : (string) json_encode($fields['name']),
-                summary: $entity->summary,
-                data: $entity->data,
-                createdAt: $entity->createdAt,
-                updatedAt: $entity->updatedAt,
-            );
-        }
-        if (array_key_exists('summary', $fields)) {
-            $entity = new Entity(
-                id: $entity->id,
-                campaignId: $entity->campaignId,
-                type: $entity->type,
-                name: $entity->name,
-                summary: is_string($fields['summary']) ? $fields['summary'] : (string) json_encode($fields['summary']),
-                data: $entity->data,
-                createdAt: $entity->createdAt,
-                updatedAt: $entity->updatedAt,
-            );
-        }
-        if (array_key_exists('data', $fields)) {
-            $data = is_string($fields['data']) ? $fields['data'] : json_encode($fields['data'], JSON_THROW_ON_ERROR);
-            $entity = new Entity(
-                id: $entity->id,
-                campaignId: $entity->campaignId,
-                type: $entity->type,
-                name: $entity->name,
-                summary: $entity->summary,
-                data: $data,
-                createdAt: $entity->createdAt,
-                updatedAt: $entity->updatedAt,
-            );
+        $name = $entity->name;
+        $summary = $entity->summary;
+
+        /** @var array<string, mixed> $data */
+        $data = json_decode($entity->data === '' ? '{}' : $entity->data, true, 512, JSON_THROW_ON_ERROR) ?: [];
+
+        foreach ($fields as $key => $value) {
+            if ($key === 'name') {
+                $name = is_string($value) ? $value : (string) json_encode($value);
+            } elseif ($key === 'summary') {
+                $summary = is_string($value) ? $value : (string) json_encode($value);
+            } elseif ($key === 'data') {
+                $nested = is_string($value) ? json_decode($value, true, 512, JSON_THROW_ON_ERROR) : $value;
+                if (is_array($nested)) {
+                    $data = array_merge($data, $nested);
+                }
+            } else {
+                $data[$key] = $value;
+            }
         }
 
-        $entity = new Entity(
+        $this->upsertEntity(new Entity(
             id: $entity->id,
             campaignId: $entity->campaignId,
             type: $entity->type,
-            name: $entity->name,
-            summary: $entity->summary,
-            data: $entity->data,
+            name: $name,
+            summary: $summary,
+            data: json_encode($data, JSON_THROW_ON_ERROR),
             createdAt: $entity->createdAt,
             updatedAt: $this->nowTimestamp(),
-        );
-
-        $this->upsertEntity($entity);
+        ));
     }
 
     private function normalizeSeatType(string $raw): string

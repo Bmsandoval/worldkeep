@@ -59,11 +59,11 @@ Details: [docs/open5e-integration.md](./docs/open5e-integration.md)
 {
   "mcpServers": {
     "worldkeep": {
-      "command": "go",
-      "args": ["run", "./cmd/worldkeep-mcp"],
-      "cwd": "/path/to/worldkeep/mcp",
+      "command": "php",
+      "args": ["artisan", "worldkeep:mcp"],
+      "cwd": "/path/to/worldkeep/web",
       "env": {
-        "WORLDKEEP_DATA_DIR": "/path/to/worldkeep/data",
+        "WORLDKEEP_CAMPAIGN_ID": "campaign_001",
         "WORLDKEEP_SRD_VERSION": "srd-2014"
       }
     }

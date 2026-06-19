@@ -32,7 +32,6 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
-        <env name="WORLDKEEP_INTERNAL_URL" value="http://127.0.0.1:8788"/>
         <env name="WORLDKEEP_CAMPAIGN_ID" value="campaign_001"/>
     </php>
 </phpunit>

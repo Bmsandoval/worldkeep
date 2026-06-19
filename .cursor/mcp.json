@@ -1,11 +1,11 @@
 {
   "mcpServers": {
     "worldkeep": {
-      "command": "go",
-      "args": ["run", "./cmd/worldkeep-mcp"],
-      "cwd": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/mcp",
+      "command": "php",
+      "args": ["artisan", "worldkeep:mcp"],
+      "cwd": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/web",
       "env": {
-        "WORLDKEEP_DATA_DIR": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/data",
+        "WORLDKEEP_CAMPAIGN_ID": "campaign_001",
         "WORLDKEEP_SRD_VERSION": "srd-2014"
       }
     }
