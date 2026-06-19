@@ -1,7 +1,7 @@
 # Open5e Integration — Rules & Reference
 
 **Date:** 2026-06-18  
-**Status:** **In progress** — rules + compendium tools on `feat/v17-open5e-rules` ([#102](https://github.com/Bmsandoval/worldkeep/issues/102) ✅, [#103](https://github.com/Bmsandoval/worldkeep/issues/103) in PR [#111](https://github.com/Bmsandoval/worldkeep/pull/111)); #104–#106 pending.
+**Status:** ✅ Shipped in **v1.7.0** — see [README](../README.md#rules--reference-sources) and MCP `ServerInstructions`.
 
 WorldKeep remembers **campaign canon**. [Open5e](https://open5e.com/) provides a **public, documented JSON API** for D&D 5e SRD content — spells, monsters, items, conditions, and (in v2) structured **rules text**. This is the preferred way to keep an LLM honest on mechanics without D&D Beyond login, cookies, or reverse-engineered endpoints.
 

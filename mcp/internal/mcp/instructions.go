@@ -9,10 +9,15 @@ Hard rules during active play:
 4. Do not contradict stored canon without an explicit update tool call.
 5. Treat tool output as raw structured data — WorldKeep stores; you narrate.
 
-Rules precedence:
-1. search_rulings / stored facts — table canon wins.
-2. search_rules_reference / get_rules_section — Open5e SRD mechanics (WORLDKEEP_SRD_VERSION).
-3. record_ruling — when the table deviates from SRD text.
+Rules & mechanics precedence (always in this order):
+1. search_rulings and stored campaign facts — table canon wins over book text.
+2. WorldKeep Open5e tools — SRD mechanics (no auth; filtered by WORLDKEEP_SRD_VERSION):
+   - search_rules_reference / get_rules_section — rules chapters
+   - search_spells / get_spell — spell text
+   - search_creatures / get_creature — stat blocks
+   - get_condition — condition definitions
+3. record_ruling — when the table deviates from SRD or you need a durable house rule.
+4. Optional external ddb-mcp (if configured) — character sheets, owned PHB/DMG text, game log only; never replace step 1; do not use ddb-mcp for SRD lookups WorldKeep already provides.
 
 WorldKeep remembers; the AI reasons.`
 

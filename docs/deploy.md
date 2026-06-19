@@ -39,8 +39,11 @@ docker run --rm -p 8080:80 worldkeep:local
 | `WORLDKEEP_INTERNAL_URL` | `http://127.0.0.1:8788` | Laravel → Go |
 | `WORLDKEEP_API_TOKEN` | *(empty)* | Optional REST bearer auth |
 | `WORLDKEEP_ROLE` | `dm` | Go write scope |
+| `WORLDKEEP_SRD_VERSION` | `srd-2014` | Open5e document filter (`srd-2024`, `both`) |
 
 Laravel uses `web/.env` (generated on first boot from `.env.example`).
+
+Rules source policy: [open5e-integration.md](./open5e-integration.md) · [README](../README.md#rules--reference-sources)
 
 ## Persistent data
 

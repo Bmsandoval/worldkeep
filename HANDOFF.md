@@ -1,6 +1,6 @@
 # WorldKeep — Handoff
 
-_Last updated: 2026-06-18 (seat handoff → icebox)_
+_Last updated: 2026-06-18 (v1.7.0 deployable MVP tagged)_
 
 **Starting point for a new session.** Read this first, then [AGENTS.md](./AGENTS.md) and the active GitHub issue.
 
@@ -40,13 +40,13 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: Post-MVP — Web UI complete through v1.3.0; next: Open5e + Phase 3 actors** — see [docs/roadmap.md](./docs/roadmap.md)
+**Active phase: Deployable MVP (v1.7.0 tagged) → hosted deployment** — see [docs/deploy.md](./docs/deploy.md)
 
-POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
+POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** [#101](https://github.com/Bmsandoval/worldkeep/issues/101) Open5e SRD integration (v1.7.0), or Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)).
+**Next recommended:** Deploy unified Docker/Fargate stack ([docs/deploy.md](./docs/deploy.md)), then Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
 
-**Icebox:** Human ↔ AI seat swapping (v1.4.0–v1.6.0) — [docs/icebox.md](./docs/icebox.md) · design [participant-handoff.md](./docs/participant-handoff.md)
+**Icebox:** Human ↔ AI seat swapping (v1.4.0–v1.6.0) — [docs/icebox.md](./docs/icebox.md)
 
 ---
 
@@ -57,7 +57,7 @@ POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Playtest �
 | **v1.1.0** REST API | [#84](https://github.com/Bmsandoval/worldkeep/issues/84) | #82–#83 | ✅ |
 | **v1.2.0** First browser UI | [#87](https://github.com/Bmsandoval/worldkeep/issues/87) | #85–#86 | ✅ |
 | **v1.3.0** Browse + session UI | [#90](https://github.com/Bmsandoval/worldkeep/issues/90) | #88–#89 | ✅ |
-| **v1.7.0** Open5e + optional DDB | [#101](https://github.com/Bmsandoval/worldkeep/issues/101) | #102–#106 | **Next** — Open5e SRD tools (primary); optional DDB party/game-log |
+| **v1.7.0** Open5e rules | [#101](https://github.com/Bmsandoval/worldkeep/issues/101) | #102–#104 | ✅ — #105–#106 optional DDB backlog |
 
 Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/open5e-integration.md](./docs/open5e-integration.md) · [docs/dndbeyond-integration.md](./docs/dndbeyond-integration.md) · [docs/owlbear-integration.md](./docs/owlbear-integration.md)
 
@@ -143,9 +143,9 @@ worldkeep/
 
 ## Git state
 
-**Local `develop` head:** `d13e436` — POC product spec promoted to `docs/`.
+**Local `develop` head:** after merge of PR #111 — tag **`v1.7.0`** (deployable MVP).
 
-No tags yet. No `main` branch (integration = `develop` only).
+Integration branch: `develop` only (no `main` yet).
 
 ```bash
 cd ~/projects/prototyper/prototypes/worldkeep
@@ -169,7 +169,8 @@ git pull origin develop
 | Laravel web UI (v1.2.0 WIP) | ✅ dashboard + approvals under `web/` — `make serve` |
 | World browser + sessions (v1.3.0) | ✅ entity browse/search + session timeline UI |
 | Single-service deploy | ✅ `Dockerfile` — Apache :80 + Go loopback :8788 |
-| MVP MCP tools (v0.7.0–v1.0.0) | ✅ 23 tools — dashboard, secrets, session workspace, hybrid search, import, roles |
+| Open5e SRD tools (v1.7.0) | ✅ 7 tools — rules, spells, creatures, conditions — [docs/open5e-integration.md](./docs/open5e-integration.md) |
+| MVP MCP tools (v0.7.0–v1.0.0) | ✅ core continuity tools — dashboard, secrets, session workspace, import, roles |
 | Live multi-chat playtest | ✅ [docs/playtest-notes.md](./docs/playtest-notes.md) |
 
 ---
