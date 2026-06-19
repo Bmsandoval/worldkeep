@@ -54,7 +54,7 @@ func TestHTTPMCPToolsList(t *testing.T) {
 func TestHealthz(t *testing.T) {
 	srv := &mcp.Server{}
 	mux := http.NewServeMux()
-	srv.MountHTTP(mux)
+	srv.MountHealthz(mux)
 	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
 	rec := httptest.NewRecorder()
 	mux.ServeHTTP(rec, req)

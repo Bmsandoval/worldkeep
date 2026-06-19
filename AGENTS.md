@@ -38,7 +38,7 @@ gh issue list --repo Bmsandoval/worldkeep --state open
 
 **WorldKeep** is a **continuity engine** for AI-assisted tabletop RPGs and narrative play. It stores structured campaign memory (actors, locations, events, plots, facts, rulings) and exposes it via MCP so an AI client can **retrieve relevant context before narrating** and **propose canon updates** that a human approves. WorldKeep remembers; the AI reasons.
 
-**Active phase:** **POC** — prove memory reliability across sessions. See [docs/poc.md](./docs/poc.md).
+**Active phase:** **Post-MVP** — REST API, browser UI, participant handoff. See [docs/roadmap.md](./docs/roadmap.md) and [HANDOFF.md](./HANDOFF.md).
 
 **Later phases:** MVP campaign OS → party intelligence → campaign intelligence. Backlog: ruleset engine, living world. Icebox: narrative optimization. See [docs/roadmap.md](./docs/roadmap.md).
 
@@ -48,11 +48,14 @@ gh issue list --repo Bmsandoval/worldkeep --state open
 
 | Area | Choice |
 | ---- | ------ |
-| **Language** | **Go** — MCP server, storage, tests |
+| **Language** | **Go** — MCP server, REST API, storage, tests |
+| **Web UI** | **Laravel** in `web/` — dashboard + approvals (v1.2+) |
 | **Storage** | **SQLite** for local POC (Postgres optional later) |
-| **MCP (local)** | **stdio** for Cursor / Claude Desktop |
-| **MCP (ChatGPT)** | **Streamable HTTP** on localhost + **tunnel** — after POC read path |
-| **Auth** | **None** in POC — single user, local machine |
+| **HTTP (unified)** | **`worldkeep-serve`** — MCP + REST on one port (`WORLDKEEP_HTTP_ADDR`) |
+| **MCP (local)** | **stdio** for Cursor (`make mcp`) |
+| **MCP (ChatGPT)** | HTTP `/mcp` + tunnel or Docker single host |
+| **Deploy** | **One container** — Apache + Go loopback ([docs/deploy.md](./docs/deploy.md)) |
+| **Auth** | Laravel session (UI); optional `WORLDKEEP_API_TOKEN` for REST |
 
 Pattern: follow [timelord/mcp](https://github.com/Bmsandoval/timelord/tree/feat/chatgpt-mcp/mcp) for remote HTTP shape.
 
@@ -97,6 +100,9 @@ All product artifacts live under **`docs/`**:
 | [context-pipeline.md](./docs/context-pipeline.md) | Context retrieval (core product) |
 | [session-lifecycle.md](./docs/session-lifecycle.md) | Play session flow |
 | [poc.md](./docs/poc.md) | **What to build first** |
-| [mvp.md](./docs/mvp.md) | Post-POC scope (do not build yet) |
+| [mvp.md](./docs/mvp.md) | Post-POC scope |
+| [web-ui.md](./docs/web-ui.md) | Browser UI delivery |
+| [rest-api.md](./docs/rest-api.md) | REST API |
+| [deploy.md](./docs/deploy.md) | Unified Docker / hosting |
 
 Planning informs issues; **issues drive implementation** once realigned to POC docs.

@@ -12,15 +12,18 @@ Connect ChatGPT to a local WorldKeep campaign over HTTPS using a tunnel.
 
 ```bash
 cd ~/projects/prototyper/prototypes/worldkeep
+make seed
 chmod +x scripts/tunnel.sh
 ./scripts/tunnel.sh
 ```
 
 The script:
 
-1. Runs `worldkeep-mcp-http` on `WORLDKEEP_MCP_ADDR` (default `:8788`)
+1. Runs **`worldkeep-serve`** (unified MCP + REST) on `WORLDKEEP_HTTP_ADDR` / `WORLDKEEP_MCP_ADDR` (default `:8788`)
 2. Opens a cloudflared quick tunnel
 3. Logs the public URL to `.tunnel/cloudflared.log`
+
+For **UI + MCP on one host**, use Docker instead: [deploy.md](./deploy.md).
 
 Copy the `https://*.trycloudflare.com` URL from the log.
 
@@ -57,6 +60,6 @@ Cursor uses stdio — no tunnel required. See playtest-notes.md for MCP config.
 
 | Issue | Fix |
 |-------|-----|
-| 502 from tunnel | Ensure `make mcp-http` responds at `/healthz` locally |
+| 502 from tunnel | Ensure `curl http://127.0.0.1:8788/healthz` works before tunneling |
 | Empty campaign | Run `make seed` |
 | Wrong campaign DB | Set `WORLDKEEP_CAMPAIGN_ID=campaign_001` |

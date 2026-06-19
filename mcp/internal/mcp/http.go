@@ -9,6 +9,9 @@ import (
 
 func (s *Server) MountHTTP(mux *http.ServeMux) {
 	mux.HandleFunc("/mcp", s.handleMCP)
+}
+
+func (s *Server) MountHealthz(mux *http.ServeMux) {
 	mux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})
 	})
@@ -74,6 +77,7 @@ func writeJSON(w http.ResponseWriter, status int, v any) {
 func NewHTTPServer(addr string, srv *Server) *http.Server {
 	mux := http.NewServeMux()
 	srv.MountHTTP(mux)
+	srv.MountHealthz(mux)
 	return &http.Server{Addr: addr, Handler: mux}
 }
 

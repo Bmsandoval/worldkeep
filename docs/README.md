@@ -24,7 +24,12 @@ These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026
 | [poc.md](./poc.md) | Proof of concept — **build this first** |
 | [mvp.md](./mvp.md) | Campaign operating system |
 | [web-ui.md](./web-ui.md) | Browser UI delivery plan (Phase 2.5) |
+| [rest-api.md](./rest-api.md) | REST API routes (v1.1.0) |
+| [deploy.md](./deploy.md) | Unified Docker / single-service hosting |
 | [participant-handoff.md](./participant-handoff.md) | Human ↔ AI seat cycling |
+| [dndbeyond-integration.md](./dndbeyond-integration.md) | D&D Beyond MCP — characters, maps, optional sync |
+| [open5e-integration.md](./open5e-integration.md) | **Open5e API — primary SRD rules reference** |
+| [owlbear-integration.md](./owlbear-integration.md) | Owlbear VTT + extension — tactical maps (backlog) |
 | [party-system.md](./party-system.md) | Persistent companions |
 | [world-intel.md](./world-intel.md) | Campaign intelligence |
 | [ruleset-engine.md](./ruleset-engine.md) | Custom rulesets (backlog) |

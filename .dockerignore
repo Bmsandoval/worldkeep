@@ -1,0 +1,8 @@
+.git
+.cursor
+data/
+web/.env
+web/vendor/
+web/node_modules/
+web/storage/logs/
+**/*.sqlite

@@ -15,8 +15,10 @@ Product spec: [docs/](./docs/) (supersedes earlier bootstrap planning in git his
 ```bash
 make seed
 make test
-make mcp        # stdio — Cursor
-make mcp-http   # HTTP — ChatGPT via scripts/tunnel.sh
+make serve      # Go MCP+REST :8788 + Laravel UI :8000
+make mcp        # stdio — Cursor only
+# Docker (UI + MCP + REST on one port):
+make docker-build && docker run --rm -p 8080:80 worldkeep:local
 ```
 
 ## Quick concept
