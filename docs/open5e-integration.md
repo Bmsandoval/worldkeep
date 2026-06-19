@@ -1,7 +1,7 @@
 # Open5e Integration — Rules & Reference
 
 **Date:** 2026-06-18  
-**Status:** Recommended **primary** rules source for WorldKeep (see [#101](https://github.com/Bmsandoval/worldkeep/issues/101)).
+**Status:** **In progress** — `search_rules_reference` + `get_rules_section` shipped on `feat/v17-open5e-rules` ([#102](https://github.com/Bmsandoval/worldkeep/issues/102)); spell/creature tools ([#103](https://github.com/Bmsandoval/worldkeep/issues/103)) pending.
 
 WorldKeep remembers **campaign canon**. [Open5e](https://open5e.com/) provides a **public, documented JSON API** for D&D 5e SRD content — spells, monsters, items, conditions, and (in v2) structured **rules text**. This is the preferred way to keep an LLM honest on mechanics without D&D Beyond login, cookies, or reverse-engineered endpoints.
 
@@ -88,8 +88,8 @@ Implement as **native WorldKeep tools** (HTTP client to `api.open5e.com`) — no
 
 | Tool | Behavior |
 | ---- | -------- |
-| `search_rules_reference` | `GET /v2/search/?query=` + optional `document__key` filter; return snippets + keys |
-| `get_rules_section` | `GET /v2/rules/{key}/` full `desc` |
+| `search_rules_reference` | `GET /v2/search/?query=` + SRD filter; return snippets + `rule_key` | ✅ v1.7 (#102) |
+| `get_rules_section` | `GET /v2/rules/{key}/` full `desc` | ✅ v1.7 (#102) |
 | `get_spell` / `search_spells` | By name or search; default SRD document filter |
 | `get_creature` / `search_creatures` | Stat block for prep/combat reference |
 | `get_condition` | Condition text |

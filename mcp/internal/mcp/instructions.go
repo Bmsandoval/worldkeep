@@ -9,6 +9,11 @@ Hard rules during active play:
 4. Do not contradict stored canon without an explicit update tool call.
 5. Treat tool output as raw structured data — WorldKeep stores; you narrate.
 
+Rules precedence:
+1. search_rulings / stored facts — table canon wins.
+2. search_rules_reference / get_rules_section — Open5e SRD mechanics (WORLDKEEP_SRD_VERSION).
+3. record_ruling — when the table deviates from SRD text.
+
 WorldKeep remembers; the AI reasons.`
 
 const defaultProtocolVersion = "2025-06-18"
