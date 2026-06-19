@@ -15,14 +15,14 @@ The MCP server remains the AI integration path. The UI talks to a **REST API** t
 ## 3. Architecture target
 
 ```text
-Browser (React or Laravel Blade + HTMX)
-        |
-   REST API  ←── same Go service or thin API layer
-        |
-   SQLite / Postgres
-        |
-   MCP Server  ←── Cursor / ChatGPT unchanged
+One service (local Docker / Fargate task):
+  Apache :80 — Laravel Blade UI (/app/*)
+    reverse proxy /mcp, /api, /healthz → Go 127.0.0.1:8788
+  Go worldkeep-serve — MCP + REST + SQLite (shared store)
+  Cursor / ChatGPT → /mcp (same host as UI when deployed)
 ```
+
+Laravel never duplicates canon logic — it calls the Go engine server-side via `WORLDKEEP_INTERNAL_URL`.
 
 ## 4. UI surfaces (from [mvp.md](./mvp.md) §16)
 
@@ -57,10 +57,10 @@ Parallel work: Phase 3 **party actor** MCP (personalities, `prepare_actor_contex
 
 | Layer | Default | Notes |
 | ----- | ------- | ----- |
-| API | Go HTTP routes alongside `worldkeep-mcp-http` or shared `internal/api` | Reuse `internal/store` |
-| Frontend | React (Vite) or Laravel kit from prototyper factory | Match maintainer preference at v1.2 kickoff |
-| Auth | Local single-user → campaign invite tokens | Full OAuth deferred |
-| Deploy | Same Fargate pattern as infra/ when hosted | SQLite local dev |
+| Engine | `worldkeep-serve` — MCP + REST on one port | Reuse `internal/store` |
+| Frontend | Laravel kit in `web/` | Dashboard + approval queue (v1.2) |
+| Auth | Local session (Laravel) + optional `WORLDKEEP_API_TOKEN` for REST | Full OAuth deferred |
+| Deploy | **Single Dockerfile** — Apache + Go sidecar-in-process | No second Fargate service for MCP |
 
 ## 7. Success criteria
 

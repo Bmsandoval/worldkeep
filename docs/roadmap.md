@@ -205,6 +205,17 @@ These are likely future phases, but should not block the core roadmap.
 
 ---
 
+## Owlbear Rodeo — tactical map integration
+
+Document: [owlbear-integration.md](./owlbear-integration.md)  
+Tracking: GitHub **[#107](https://github.com/Bmsandoval/worldkeep/issues/107)**
+
+Lightweight browser VTT via **WorldKeep-hosted Owlbear extension** + WebSocket command bridge so the LLM moves tokens (players do not manually apply grid directions). Preferred over Foundry-as-a-service due to license/ops cost. Foundry remains optional BYOL for power users.
+
+Promotion criteria: after REST API (#82) and optional first UI (#87); when playtests need a real battle board without Foundry economics.
+
+---
+
 ## Ruleset Engine
 
 Document:

@@ -158,6 +158,34 @@ FROM events WHERE session_id = ? ORDER BY created_at`, sessionID)
 	return out, rows.Err()
 }
 
+func (s *Store) ListSessions(ctx context.Context, campaignID string, limit int) ([]Session, error) {
+	if limit <= 0 {
+		limit = 20
+	}
+	rows, err := s.db.QueryContext(ctx, `
+SELECT id, campaign_id, title, status,
+       COALESCE(notes, ''), COALESCE(summary, ''),
+       started_at, ended_at
+FROM sessions
+WHERE campaign_id = ?
+ORDER BY started_at DESC
+LIMIT ?`, campaignID, limit)
+	if err != nil {
+		return nil, fmt.Errorf("list sessions: %w", err)
+	}
+	defer rows.Close()
+
+	var out []Session
+	for rows.Next() {
+		var sess Session
+		if err := rows.Scan(&sess.ID, &sess.CampaignID, &sess.Title, &sess.Status, &sess.Notes, &sess.Summary, &sess.StartedAt, &sess.EndedAt); err != nil {
+			return nil, err
+		}
+		out = append(out, sess)
+	}
+	return out, rows.Err()
+}
+
 func (s *Store) GetSessionWorkspace(ctx context.Context, sessionID string) (SessionWorkspace, error) {
 	sess, err := s.GetSession(ctx, sessionID)
 	if err != nil {

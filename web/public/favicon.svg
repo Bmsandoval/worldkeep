@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Savor">
+    <rect width="32" height="32" rx="7" fill="#212447"/>
+    <g fill="#68adb7">
+        <path d="M11 7h10c0 0 1 9-5 11s-5-11-5-11z"/>
+        <rect x="15" y="18" width="2" height="7" rx="0.5"/>
+        <ellipse cx="16" cy="27" rx="4.5" ry="1.75"/>
+    </g>
+</svg>

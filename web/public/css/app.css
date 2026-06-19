@@ -1,0 +1,73 @@
+:root {
+    --app-primary: #212447;
+    --app-secondary: #68adb7;
+    --app-bg: #f5f9fa;
+    --bs-primary: var(--app-primary);
+    --bs-primary-rgb: 33, 36, 71;
+    --bs-secondary: var(--app-secondary);
+    --bs-secondary-rgb: 104, 173, 183;
+    --bs-body-font-family: "League Spartan", system-ui, sans-serif;
+    --bs-body-bg: var(--app-bg);
+    --bs-link-color: var(--app-secondary);
+    --bs-link-hover-color: #54939c;
+}
+
+body {
+    font-family: var(--bs-body-font-family);
+}
+
+.navbar-app {
+    background-color: var(--app-bg) !important;
+    border-bottom: 2px solid var(--app-primary);
+}
+
+.navbar-app .navbar-toggler {
+    border-color: var(--app-primary);
+}
+
+.navbar-app .navbar-toggler-icon {
+    filter: brightness(0) saturate(100%) invert(12%) sepia(25%) saturate(1200%) hue-rotate(198deg);
+}
+
+.navbar-brand {
+    font-weight: 700;
+    color: var(--app-primary) !important;
+    letter-spacing: -0.02em;
+}
+
+.nav-link-app {
+    color: var(--app-primary) !important;
+    font-weight: 500;
+}
+
+.nav-link-app:hover {
+    color: var(--app-secondary) !important;
+}
+
+.btn-app-primary {
+    background-color: var(--app-secondary);
+    border-color: var(--app-secondary);
+    color: #fff;
+    font-weight: 600;
+}
+
+.btn-app-primary:hover,
+.btn-app-primary:focus {
+    background-color: #54939c;
+    border-color: #54939c;
+    color: #fff;
+}
+
+.card-app {
+    border-color: rgba(33, 36, 71, 0.12);
+    box-shadow: 0 1px 3px rgba(33, 36, 71, 0.06);
+}
+
+h1, h2, h3, .h1, .h2, .h3 {
+    color: var(--app-primary);
+    font-weight: 700;
+}
+
+.ph-icon {
+    vertical-align: -0.125em;
+}

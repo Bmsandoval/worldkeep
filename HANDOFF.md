@@ -44,7 +44,7 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** [#82](https://github.com/Bmsandoval/worldkeep/issues/82) REST API foundation (v1.1.0), or Phase 3 actor MCP in parallel.
+**Next recommended:** [#91](https://github.com/Bmsandoval/worldkeep/issues/91) campaign seats (v1.4.0), or Phase 3 actor MCP in parallel.
 
 ---
 
@@ -58,8 +58,11 @@ POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./
 | **v1.4.0** Campaign seats | [#93](https://github.com/Bmsandoval/worldkeep/issues/93) | #91–#92 | Seats schema + MCP |
 | **v1.5.0** Human ↔ AI handoff | [#97](https://github.com/Bmsandoval/worldkeep/issues/97) | #94–#96 | Friend joins / DM takeover / leave → AI |
 | **v1.6.0** Seat UI + invites | [#100](https://github.com/Bmsandoval/worldkeep/issues/100) | #98–#99 | Browser join/handoff |
+| **v1.7.0** Open5e + optional DDB | [#101](https://github.com/Bmsandoval/worldkeep/issues/101) | #102–#106 | **Open5e SRD tools (primary)**; optional DDB party/game-log |
 
-Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/participant-handoff.md](./docs/participant-handoff.md)
+Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/participant-handoff.md](./docs/participant-handoff.md) · [docs/open5e-integration.md](./docs/open5e-integration.md) · [docs/dndbeyond-integration.md](./docs/dndbeyond-integration.md) · [docs/owlbear-integration.md](./docs/owlbear-integration.md)
+
+**Backlog (tactical maps):** [#107](https://github.com/Bmsandoval/worldkeep/issues/107) Owlbear integration
 
 ---
 
@@ -107,6 +110,7 @@ worldkeep/
   docs/                   ← product spec (source of truth)
   docs/workflow/          ← issue/PR process (not product spec)
   scripts/
+    serve.sh                 ← local Go + Laravel (two ports)
     create_github_issues.py
     realign_github_issues.py
     realign_mvp_github_issues.py
@@ -114,11 +118,16 @@ worldkeep/
     playtest-mcp.sh
     playtest-stdio.sh
     tunnel.sh
+  web/                       ← Laravel UI (dashboard + approvals)
+  Dockerfile                 ← Apache + Go on one container (:80)
   mcp/
+    cmd/worldkeep-serve/     ← unified MCP + REST (preferred)
     cmd/worldkeep-mcp/       ← stdio (Cursor)
-    cmd/worldkeep-mcp-http/  ← HTTP (ChatGPT tunnel)
+    cmd/worldkeep-mcp-http/  ← alias → unified server
+    cmd/worldkeep-api/       ← alias → unified server
     internal/store/          ← SQLite campaign store
     internal/mcp/            ← MCP protocol + tools
+    internal/api/            ← REST handlers (shares store)
 ```
 
 ---
@@ -145,7 +154,11 @@ git pull origin develop
 | GitHub issues (v0.1.0–v0.6.0 POC queue) | ✅ implemented (#23–#44) |
 | Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
 | MCP stdio server (Cursor) | ✅ `make mcp` |
-| MCP HTTP + tunnel (ChatGPT) | ✅ `make mcp-http` / `scripts/tunnel.sh` |
+| MCP HTTP + tunnel (ChatGPT) | ✅ `make serve` or Docker — `/mcp` proxied on same host as UI |
+| REST API (v1.1.0) | ✅ unified in `worldkeep-serve` — [docs/rest-api.md](./docs/rest-api.md) |
+| Laravel web UI (v1.2.0 WIP) | ✅ dashboard + approvals under `web/` — `make serve` |
+| World browser + sessions (v1.3.0) | ✅ entity browse/search + session timeline UI |
+| Single-service deploy | ✅ `Dockerfile` — Apache :80 + Go loopback :8788 |
 | MVP MCP tools (v0.7.0–v1.0.0) | ✅ 23 tools — dashboard, secrets, session workspace, hybrid search, import, roles |
 | Live multi-chat playtest | ✅ [docs/playtest-notes.md](./docs/playtest-notes.md) |
 
@@ -184,9 +197,9 @@ Details: [docs/poc.md](./docs/poc.md) §7–§14. Demo scenario: *Shadows of Bla
 ## New session quick start
 
 1. Read this file + [AGENTS.md](./AGENTS.md) + [docs/poc.md](./docs/poc.md).
-2. Run `make test && make seed` — connect MCP per [docs/playtest-notes.md](./docs/playtest-notes.md) or [docs/chatgpt-mcp-setup.md](./docs/chatgpt-mcp-setup.md).
+2. Run `make test-all && make seed` — local stack: `make serve` ([docs/deploy.md](./docs/deploy.md)).
 3. Branch from `develop`; implement only agreed scope.
-4. `cd mcp && go test ./...` before PR.
+4. `make test-all` before PR (Go + Laravel).
 5. Open PR to `develop`; **do not merge** unless maintainer explicitly asks.
 
 Process: [docs/workflow/prototype-workflow.md](./docs/workflow/prototype-workflow.md).
