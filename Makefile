@@ -1,4 +1,4 @@
-.PHONY: test test-all seed tidy mcp mcp-http api serve setup web-install web-test docker-build backfill-seats
+.PHONY: test test-all seed tidy mcp mcp-http api serve setup web-install web-test docker-build backfill-seats playtest-handoff
 
 setup: seed web-install
 
@@ -35,6 +35,10 @@ docker-build:
 
 backfill-seats:
 	cd mcp && WORLDKEEP_DATA_DIR=../data go run ./cmd/backfill-seats
+
+playtest-handoff:
+	@chmod +x scripts/playtest-handoff.sh
+	./scripts/playtest-handoff.sh
 
 tidy:
 	cd mcp && go mod tidy

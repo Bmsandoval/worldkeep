@@ -43,6 +43,9 @@ VALUES (?, ?, ?, 'open', datetime('now'))`, id, campaignID, title)
 	if err != nil {
 		return Session{}, fmt.Errorf("start session: %w", err)
 	}
+	if _, err := s.InitSessionFloor(ctx, id, campaignID); err != nil {
+		return Session{}, err
+	}
 	return s.GetSession(ctx, id)
 }
 

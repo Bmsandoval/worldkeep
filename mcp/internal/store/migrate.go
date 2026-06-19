@@ -5,7 +5,7 @@ import (
 	"fmt"
 )
 
-const currentSchemaVersion = 3
+const currentSchemaVersion = 4
 
 func (s *Store) Migrate(ctx context.Context) error {
 	if _, err := s.db.ExecContext(ctx, schemaSQL); err != nil {
@@ -32,6 +32,10 @@ func (s *Store) Migrate(ctx context.Context) error {
 		case 3:
 			if err := s.migrateToV3(ctx); err != nil {
 				return fmt.Errorf("migrate v3: %w", err)
+			}
+		case 4:
+			if err := s.migrateToV4(ctx); err != nil {
+				return fmt.Errorf("migrate v4: %w", err)
 			}
 		default:
 			return fmt.Errorf("unknown schema version %d", v)
@@ -81,6 +85,17 @@ CREATE TABLE IF NOT EXISTS campaign_seats (
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 CREATE INDEX IF NOT EXISTS idx_campaign_seats_campaign ON campaign_seats(campaign_id);`)
+	return err
+}
+
+func (s *Store) migrateToV4(ctx context.Context) error {
+	_, err := s.db.ExecContext(ctx, `
+CREATE TABLE IF NOT EXISTS session_floor (
+    session_id TEXT PRIMARY KEY REFERENCES sessions(id) ON DELETE CASCADE,
+    floor_seat_id TEXT,
+    party_beat_queue TEXT NOT NULL DEFAULT '[]',
+    awaiting_player_checkpoint INTEGER NOT NULL DEFAULT 0
+);`)
 	return err
 }
 
