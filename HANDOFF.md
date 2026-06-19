@@ -1,6 +1,6 @@
 # WorldKeep — Handoff
 
-_Last updated: 2026-06-18 (v1.7.0 deployable MVP tagged)_
+_Last updated: 2026-06-19 (v1.8.0 deployable MVP tagged)_
 
 **Starting point for a new session.** Read this first, then [AGENTS.md](./AGENTS.md) and the active GitHub issue.
 
@@ -40,11 +40,11 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: Deployable MVP (v1.7.0 tagged) → hosted deployment** — see [docs/deploy.md](./docs/deploy.md)
+**Active phase: Deployable MVP (v1.8.0 tagged) — live at `worldkeep.bsandoval.dev`** — see [docs/deploy.md](./docs/deploy.md)
 
-POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
+POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Open5e rules ✅ v1.7.0 · **Prod UI + Cognito ✅ v1.8.0** · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** Deploy unified Docker/Fargate stack ([docs/deploy.md](./docs/deploy.md)), then Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
+**Next recommended:** Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)) or backlog Owlbear [#107](https://github.com/Bmsandoval/worldkeep/issues/107).
 
 **Icebox:** Human ↔ AI seat swapping (v1.4.0–v1.6.0) — [docs/icebox.md](./docs/icebox.md)
 
@@ -143,7 +143,7 @@ worldkeep/
 
 ## Git state
 
-**Local `develop` head:** after merge of PR #111 — tag **`v1.7.0`** (deployable MVP).
+**Local `develop` head:** after merge of deployable MVP PR — tag **`v1.8.0`** (Cognito Hosted UI + prod styling).
 
 Integration branch: `develop` only (no `main` yet).
 

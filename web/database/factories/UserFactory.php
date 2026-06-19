@@ -42,4 +42,12 @@ class UserFactory extends Factory
             'email_verified_at' => null,
         ]);
     }
+
+    public function cognito(string $sub = 'cognito-sub-test'): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'ext_id' => $sub,
+            'password' => null,
+        ]);
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CognitoAuthController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Http\Controllers\Web\CampaignDashboardController;
 use App\Http\Controllers\Web\CanonApprovalsController;
@@ -13,12 +13,17 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok']);
 });
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('api/auth')->middleware('throttle:30,1')->group(function () {
+    Route::get('/authorize', [CognitoAuthController::class, 'authorize']);
+    Route::get('/cli-config', [CognitoAuthController::class, 'cliConfig']);
+    Route::get('/cli/token', [CognitoAuthController::class, 'cliToken']);
+    Route::post('/cli/refresh', [CognitoAuthController::class, 'cliRefresh']);
+    Route::get('/token', [CognitoAuthController::class, 'token']);
+    Route::post('/logout', [CognitoAuthController::class, 'logout']);
 
-Route::middleware('auth')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/me', [AuthController::class, 'me']);
+    Route::middleware('auth.cognito')->group(function () {
+        Route::get('/me', [CognitoAuthController::class, 'me']);
+    });
 });
 
 Route::redirect('/', '/app');
@@ -26,9 +31,8 @@ Route::redirect('/', '/app');
 Route::prefix('app')->name('app.')->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
     Route::get('/login', [AuthSessionController::class, 'showLogin'])->name('login')->middleware('guest');
-    Route::post('/login', [AuthSessionController::class, 'login'])->middleware('guest');
     Route::get('/register', [AuthSessionController::class, 'showRegister'])->name('register')->middleware('guest');
-    Route::post('/register', [AuthSessionController::class, 'register'])->middleware('guest');
+    Route::get('/auth/redirect', [AuthSessionController::class, 'redirect'])->name('auth.redirect');
     Route::post('/logout', [AuthSessionController::class, 'logout'])->name('logout')->middleware('auth');
 
     Route::middleware('auth')->prefix('campaign')->name('campaign.')->group(function () {
