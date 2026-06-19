@@ -8,6 +8,13 @@
         "WORLDKEEP_DATA_DIR": "/Users/bryansandoval/projects/prototyper/prototypes/worldkeep/data",
         "WORLDKEEP_SRD_VERSION": "srd-2014"
       }
+    },
+    "ddb-mcp": {
+      "command": "npx",
+      "args": ["-y", "ddb-mcp"],
+      "env": {
+        "DDB_COOKIE": "<paste-session-cookie-if-using-owned-books-or-sheets>"
+      }
     }
   }
 }

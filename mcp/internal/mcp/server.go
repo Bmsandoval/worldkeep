@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/Bmsandoval/worldkeep/mcp/internal/open5e"
 	"github.com/Bmsandoval/worldkeep/mcp/internal/store"
 )
 
@@ -15,6 +16,7 @@ type Server struct {
 	Store           *store.Store
 	CampaignID      string
 	Role            string
+	Open5e          *open5e.Client
 	activeSessionID string
 }
 
@@ -137,6 +139,20 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleReleaseSeatToAI(ctx, args)
 	case "get_session_floor":
 		return s.handleGetSessionFloor(ctx, args)
+	case "search_rules_reference":
+		return s.handleSearchRulesReference(ctx, args)
+	case "get_rules_section":
+		return s.handleGetRulesSection(ctx, args)
+	case "search_spells":
+		return s.handleSearchSpells(ctx, args)
+	case "get_spell":
+		return s.handleGetSpell(ctx, args)
+	case "search_creatures":
+		return s.handleSearchCreatures(ctx, args)
+	case "get_creature":
+		return s.handleGetCreature(ctx, args)
+	case "get_condition":
+		return s.handleGetCondition(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}

@@ -159,6 +159,31 @@ Rejects update.
 
 ---
 
+# Rules reference (Open5e — v1.7.0)
+
+Built-in HTTP client to [api.open5e.com](https://api.open5e.com/) — no extra MCP server. Filter with `WORLDKEEP_SRD_VERSION` (`srd-2014` default, `srd-2024`, `both`).
+
+## Source precedence
+
+1. `search_rulings` / stored facts — table canon wins.
+2. Open5e tools below — SRD mechanics text.
+3. `record_ruling` — when the table deviates from SRD.
+4. Optional external **ddb-mcp** — character sheets and owned books only ([dndbeyond-integration.md](./dndbeyond-integration.md)).
+
+## Implemented tools
+
+| Tool | Purpose |
+| ---- | ------- |
+| `search_rules_reference` | Keyword search; returns `rule_key` snippets |
+| `get_rules_section` | Full rule section by key |
+| `search_spells` / `get_spell` | Spell list and detail |
+| `search_creatures` / `get_creature` | Creature stat blocks |
+| `get_condition` | Condition text (conditions API + rules fallback) |
+
+Planning: [open5e-integration.md](./open5e-integration.md)
+
+---
+
 # Future
 
 Reserved:

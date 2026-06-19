@@ -193,5 +193,44 @@ func toolDefs() []map[string]any {
 		tool("get_session_floor",
 			"Who has the narrative floor in the open session (player-led default).",
 			map[string]any{"session_id": strProp("Session id (defaults to open session)")}, nil, true, false),
+		tool("search_rules_reference",
+			"Search D&D 5e SRD rules text via Open5e (filtered by WORLDKEEP_SRD_VERSION). Returns snippets and rule_key for get_rules_section.",
+			map[string]any{
+				"query": strProp("Rules keyword or phrase"),
+				"limit": limit,
+			}, []string{"query"}, true, false),
+		tool("get_rules_section",
+			"Fetch full Open5e SRD rule section by key (from search_rules_reference rule_key).",
+			map[string]any{"key": strProp("Open5e rule key, e.g. srd_monsters_grapple-rules")}, []string{"key"}, true, false),
+		tool("search_spells",
+			"Search SRD spells via Open5e (WORLDKEEP_SRD_VERSION filter).",
+			map[string]any{
+				"query": strProp("Spell name or keyword"),
+				"limit": limit,
+			}, []string{"query"}, true, false),
+		tool("get_spell",
+			"Fetch SRD spell by Open5e key or exact name.",
+			map[string]any{
+				"key":  strProp("Open5e spell key from search_spells"),
+				"name": strProp("Spell name (used when key omitted)"),
+			}, nil, true, false),
+		tool("search_creatures",
+			"Search SRD creature stat blocks via Open5e.",
+			map[string]any{
+				"query": strProp("Creature name or keyword"),
+				"limit": limit,
+			}, []string{"query"}, true, false),
+		tool("get_creature",
+			"Fetch SRD creature stat block by Open5e key or exact name.",
+			map[string]any{
+				"key":  strProp("Open5e creature key from search_creatures"),
+				"name": strProp("Creature name (used when key omitted)"),
+			}, nil, true, false),
+		tool("get_condition",
+			"Fetch condition rules text (name or key). SRD-only when configured.",
+			map[string]any{
+				"name": strProp("Condition name, e.g. Grappled"),
+				"key":  strProp("Open5e condition key (optional)"),
+			}, nil, true, false),
 	}
 }
