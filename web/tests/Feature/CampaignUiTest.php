@@ -3,8 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Services\WorldKeepClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class CampaignUiTest extends TestCase
@@ -18,19 +18,21 @@ class CampaignUiTest extends TestCase
 
     public function test_authenticated_user_sees_dashboard_from_go_engine(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/dashboard*' => Http::response([
-                'campaign' => ['name' => 'Shadows of Blackport'],
-                'open_session' => null,
-                'active_plots' => [
-                    ['id' => 'plot_missing_prince', 'name' => 'The Missing Prince', 'summary' => 'Find the heir.'],
-                ],
-                'recent_events' => [],
-                'pending_update_count' => 2,
-                'continuity_warnings' => [],
-                'scope' => 'party',
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('dashboard')
+                ->once()
+                ->andReturn([
+                    'campaign' => ['name' => 'Shadows of Blackport'],
+                    'open_session' => null,
+                    'active_plots' => [
+                        ['id' => 'plot_missing_prince', 'name' => 'The Missing Prince', 'summary' => 'Find the heir.'],
+                    ],
+                    'recent_events' => [],
+                    'pending_update_count' => 2,
+                    'continuity_warnings' => [],
+                    'scope' => 'party',
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -45,9 +47,10 @@ class CampaignUiTest extends TestCase
 
     public function test_authenticated_user_sees_approval_queue(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/pending-updates' => Http::response([
-                'pending_updates' => [
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('listPendingUpdates')
+                ->once()
+                ->andReturn([
                     [
                         'id' => 'update_test01',
                         'reason' => 'Add a dockside rumor.',
@@ -55,9 +58,8 @@ class CampaignUiTest extends TestCase
                         'proposed_changes' => [['op' => 'add_fact']],
                         'warnings' => [],
                     ],
-                ],
-            ]),
-        ]);
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -71,15 +73,15 @@ class CampaignUiTest extends TestCase
 
     public function test_commit_redirects_after_go_engine_accepts_update(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/pending-updates/update_test01/commit' => Http::response([
-                'status' => 'committed',
-                'update_id' => 'update_test01',
-            ]),
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/pending-updates' => Http::response([
-                'pending_updates' => [],
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('commitUpdate')
+                ->once()
+                ->with('update_test01')
+                ->andReturn([
+                    'status' => 'committed',
+                    'update_id' => 'update_test01',
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -87,21 +89,19 @@ class CampaignUiTest extends TestCase
 
         $response->assertRedirect(route('app.campaign.approvals'));
         $response->assertSessionHas('status');
-        Http::assertSent(fn ($request) => $request->method() === 'POST'
-            && str_contains($request->url(), '/pending-updates/update_test01/commit'));
     }
 
     public function test_reject_redirects_after_go_engine_rejects_update(): void
     {
-        Http::fake([
-            '127.0.0.1:8788/api/v1/pending-updates/update_test01/reject' => Http::response([
-                'status' => 'rejected',
-                'update_id' => 'update_test01',
-            ]),
-            '127.0.0.1:8788/api/v1/campaigns/campaign_001/pending-updates' => Http::response([
-                'pending_updates' => [],
-            ]),
-        ]);
+        $this->mock(WorldKeepClient::class, function ($mock) {
+            $mock->shouldReceive('rejectUpdate')
+                ->once()
+                ->with('update_test01', 'Conflicts with session ruling.')
+                ->andReturn([
+                    'status' => 'rejected',
+                    'update_id' => 'update_test01',
+                ]);
+        });
 
         $user = User::factory()->create();
 
@@ -110,8 +110,5 @@ class CampaignUiTest extends TestCase
         ]);
 
         $response->assertRedirect(route('app.campaign.approvals'));
-        Http::assertSent(fn ($request) => $request->method() === 'POST'
-            && str_contains($request->url(), '/pending-updates/update_test01/reject')
-            && ($request->data()['reason'] ?? '') === 'Conflicts with session ruling.');
     }
 }

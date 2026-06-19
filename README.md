@@ -6,7 +6,7 @@ WorldKeep is a continuity layer between AI and long-running campaigns. It stores
 
 ## Status
 
-**Deployable MVP (v1.8.0)** — MCP continuity engine, Cognito Hosted UI + campaign dashboard, unified Docker/Fargate on `worldkeep.bsandoval.dev`, and **Open5e SRD rules tools** on `develop`.
+**Deployable MVP (v1.9.0 prod)** — MCP continuity engine in Laravel, Cognito Hosted UI + campaign dashboard, PHP-only Docker/Fargate on `worldkeep.bsandoval.dev` (Aurora), and **Open5e SRD rules tools** on `develop`.
 
 Product spec: [docs/](./docs/) · agent entry: [HANDOFF.md](./HANDOFF.md)
 
@@ -15,7 +15,7 @@ Product spec: [docs/](./docs/) · agent entry: [HANDOFF.md](./HANDOFF.md)
 ```bash
 make seed
 make test-all
-make serve      # Go MCP+REST :8788 + Laravel UI :8000
+make serve      # Laravel UI + REST + MCP on :8000
 make mcp        # stdio — Cursor only
 # Docker (UI + MCP + REST on one port):
 make docker-build && docker run --rm -p 8080:80 worldkeep:local

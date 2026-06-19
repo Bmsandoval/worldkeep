@@ -32,3 +32,4 @@ Thumbs.db
 composer.phar
 /auth.json
 web/public/favicon.ico
+web/storage/logs/

@@ -1,24 +1,25 @@
 # WorldKeep deployment (unified service)
 
-One running service hosts **Laravel UI**, **MCP**, and **REST API**. Go listens on loopback; Apache serves the browser and reverse-proxies engine paths.
+One running service hosts **Laravel UI**, **MCP**, and **REST API** in a single PHP process behind Apache.
 
 ## Architecture
 
 ```text
-Internet → :80 (Apache)
-            ├─ /app/*           → Laravel (PHP)
-            ├─ /mcp             → Go 127.0.0.1:8788
-            ├─ /api/v1/*        → Go 127.0.0.1:8788
-            ├─ /api/auth/*      → Laravel (Cognito)
-            └─ /healthz         → Go 127.0.0.1:8788
+Internet → :80 (Apache → Laravel)
+            ├─ /app/*           → Web UI (Cognito auth)
+            ├─ /api/auth/*      → Cognito session API
+            ├─ /api/v1/*        → WorldKeep REST (Engine)
+            ├─ /mcp             → WorldKeep MCP (JSON-RPC)
+            ├─ /health          → Laravel health
+            └─ /healthz         → Engine health
 ```
 
-Laravel calls Go server-side via `WORLDKEEP_INTERNAL_URL=http://127.0.0.1:8788` (not exposed to browsers).
+Campaign canon and Laravel auth/session tables share one database (`sqlite` locally, `pgsql` on Aurora in prod).
 
 ## Local Docker smoke test
 
 ```bash
-make seed          # optional — container auto-seeds if DB missing
+make seed          # optional — container auto-seeds on boot
 make docker-build
 docker run --rm -p 8080:80 worldkeep:local
 ```
@@ -34,12 +35,10 @@ docker run --rm -p 8080:80 worldkeep:local
 
 | Variable | Default (container) | Purpose |
 | -------- | ------------------- | ------- |
-| `WORLDKEEP_DATA_DIR` | `/var/worldkeep/data` | SQLite campaign files |
-| `WORLDKEEP_HTTP_ADDR` | `127.0.0.1:8788` | Go listen (loopback only) |
+| `DB_CONNECTION` | `sqlite` (local image) | Database driver |
 | `WORLDKEEP_CAMPAIGN_ID` | `campaign_001` | Default campaign |
-| `WORLDKEEP_INTERNAL_URL` | `http://127.0.0.1:8788` | Laravel → Go |
 | `WORLDKEEP_API_TOKEN` | *(empty)* | Optional REST bearer auth |
-| `WORLDKEEP_ROLE` | `dm` | Go write scope |
+| `WORLDKEEP_ROLE` | `owner` | Write scope for Engine |
 | `WORLDKEEP_SRD_VERSION` | `srd-2014` | Open5e document filter (`srd-2024`, `both`) |
 
 Laravel uses `web/.env` (generated on first boot from `.env.example`).
@@ -48,23 +47,17 @@ Rules source policy: [open5e-integration.md](./open5e-integration.md) · [README
 
 ## Persistent data
 
-Mount a volume on `/var/worldkeep/data` for campaign SQLite:
+**Local Docker:** mount `database/database.sqlite` or use a volume on `web/database/` for SQLite persistence.
 
-```bash
-docker run --rm -p 8080:80 \
-  -v worldkeep-data:/var/worldkeep/data \
-  worldkeep:local
-```
-
-Laravel session/users live in `database/database.sqlite` inside the container unless you add a separate volume for `web/database/`.
+**Production (hub-prod):** Aurora PostgreSQL database `worldkeep` — campaign + Laravel tables persist across redeploys.
 
 ## AWS / Fargate (hub-prod)
 
-WorldKeep runs as **`worldkeep.<domain>`** on the shared hub-prod ECS cluster (one container: Apache + Go + SQLite).
+WorldKeep runs as **`worldkeep.<domain>`** on the shared hub-prod ECS cluster (PHP container + Aurora).
 
 ### One-time infra (maintainer)
 
-In `infra/prod.env` — `worldkeep` entry in `TF_VAR_php_services` with `"sqlite":true` and `"cognito":false`.
+In `infra/prod.env` — `worldkeep` entry in `TF_VAR_php_services` with `"cognito":true` (no `sqlite` flag).
 
 ```bash
 source infra/profile.sh
@@ -76,7 +69,7 @@ protot deploy prod service
 
 ```bash
 source infra/profile.sh
-infra/scripts/deploy-worldkeep.sh prod worldkeep-v1.8.0
+infra/scripts/deploy-worldkeep.sh prod worldkeep-v1.9.0
 ```
 
 | URL | Purpose |
@@ -84,17 +77,16 @@ infra/scripts/deploy-worldkeep.sh prod worldkeep-v1.8.0
 | `https://worldkeep.<domain>/app` | Web UI |
 | `https://worldkeep.<domain>/mcp` | ChatGPT MCP |
 | `https://worldkeep.<domain>/health` | ALB health |
-| `https://worldkeep.<domain>/healthz` | Go engine health |
-
-**Persistence:** campaign + Laravel SQLite live in the container filesystem. **Redeploys reset data** until EFS (or Postgres migration) is added.
+| `https://worldkeep.<domain>/healthz` | Engine health |
 
 Spin down when idle: `protot spin-down prod worldkeep`
 
-## Local dev (two ports)
+## Local dev
 
 ```bash
-make serve
-# Go :8788, Laravel :8000 — same engine wiring as Docker
+make seed
+make serve   # php artisan serve on :8000
+make mcp     # stdio MCP for Cursor
 ```
 
 See [rest-api.md](./rest-api.md) and [web-ui.md](./web-ui.md).
