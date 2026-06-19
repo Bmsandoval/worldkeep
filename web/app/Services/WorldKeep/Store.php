@@ -284,13 +284,12 @@ class Store
         $plots = $this->listEntitiesByType($campaignId, 'plot', $scope);
         $active = [];
 
+        $resolvedStatuses = ['resolved', 'closed', 'complete', 'completed', 'done', 'failed', 'abandoned', 'cancelled', 'canceled'];
+
         foreach ($plots as $plot) {
             $data = json_decode($plot->data, true);
-            if (! is_array($data)) {
-                continue;
-            }
-            $status = $data['status'] ?? '';
-            if ($status === '' || $status === 'active') {
+            $status = is_array($data) ? strtolower((string) ($data['status'] ?? '')) : '';
+            if (! in_array($status, $resolvedStatuses, true)) {
                 $active[] = $plot;
             }
         }
@@ -909,7 +908,6 @@ class Store
                     if (
                         isset($namesSeen[$key])
                         && $namesSeen[$key] !== $change->entity->id
-                        && $change->entity->id !== ''
                     ) {
                         $warnings[] = new ConflictWarning(
                             'duplicate_name',
@@ -1082,6 +1080,13 @@ class Store
         return $this->getPendingUpdate($id);
     }
 
+    private function generateEntityId(string $type): string
+    {
+        $prefix = $type !== '' ? $type : 'entity';
+
+        return $prefix.'_'.substr((string) Str::uuid(), 0, 8);
+    }
+
     private function applyChange(string $campaignId, WorldChange $change): void
     {
         switch ($change->op) {
@@ -1091,10 +1096,11 @@ class Store
                     throw new RuntimeException("entity required for {$change->op}");
                 }
                 $entity = $change->entity;
-                if ($entity->campaignId === '') {
+                $entityId = $entity->id !== '' ? $entity->id : $this->generateEntityId($entity->type);
+                if ($entityId !== $entity->id || $entity->campaignId === '') {
                     $entity = new Entity(
-                        id: $entity->id,
-                        campaignId: $campaignId,
+                        id: $entityId,
+                        campaignId: $entity->campaignId !== '' ? $entity->campaignId : $campaignId,
                         type: $entity->type,
                         name: $entity->name,
                         summary: $entity->summary,

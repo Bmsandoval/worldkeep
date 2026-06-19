@@ -101,7 +101,7 @@ class Client
 
         $limit = CompendiumHelpers::normalizeLimit($limit);
         $allowed = $this->srdDocs();
-        $params = ['search' => $query, 'limit' => (string) $limit];
+        $params = ['name__icontains' => $query, 'limit' => (string) $limit];
         CompendiumHelpers::addDocumentFilter($params, $allowed);
 
         $page = $this->get(rtrim($this->baseUrl(), '/').'/spells/', $params);
@@ -224,7 +224,7 @@ class Client
 
         $limit = CompendiumHelpers::normalizeLimit($limit);
         $allowed = $this->srdDocs();
-        $params = ['search' => $query, 'limit' => (string) $limit];
+        $params = ['name__icontains' => $query, 'limit' => (string) $limit];
         CompendiumHelpers::addDocumentFilter($params, $allowed);
 
         $page = $this->get(rtrim($this->baseUrl(), '/').'/creatures/', $params);

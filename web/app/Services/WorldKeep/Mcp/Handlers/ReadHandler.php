@@ -34,6 +34,7 @@ final class ReadHandler
             $npcs = $server->store->listEntitiesByType($cid, 'npc', $sc);
             $factions = $server->store->listEntitiesByType($cid, 'faction', $sc);
             $locations = $server->store->listEntitiesByType($cid, 'location', $sc);
+            $secrets = $server->store->listEntitiesByType($cid, 'secret', $sc);
         } catch (RuntimeException $e) {
             return [[], Protocol::rpcError(Protocol::CODE_INTERNAL_ERROR, $e->getMessage())];
         }
@@ -44,6 +45,7 @@ final class ReadHandler
             'npcs' => array_map(static fn (Entity $e) => $e->toArray(), $npcs),
             'factions' => array_map(static fn (Entity $e) => $e->toArray(), $factions),
             'locations' => array_map(static fn (Entity $e) => $e->toArray(), $locations),
+            'secrets' => array_map(static fn (Entity $e) => $e->toArray(), $secrets),
             'scope' => $sc->value,
         ]), null];
     }
