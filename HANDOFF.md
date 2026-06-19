@@ -44,7 +44,7 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** [#94](https://github.com/Bmsandoval/worldkeep/issues/94) participant handoff (v1.5.0), or Phase 3 actor MCP in parallel.
+**Next recommended:** [#98](https://github.com/Bmsandoval/worldkeep/issues/98) seat management UI (v1.6.0), or Phase 3 `prepare_actor_context` MCP.
 
 ---
 
@@ -155,6 +155,7 @@ git pull origin develop
 | Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
 | MCP stdio server (Cursor) | ✅ `make mcp` |
 | Campaign seats (v1.4.0) | ✅ `list_campaign_seats`, `assign_seat_controller` — `make backfill-seats` on existing DBs |
+| Participant handoff (v1.5.0) | ✅ `handoff_seat`, `release_seat_to_ai`, `get_session_floor` — `make playtest-handoff` |
 | MCP HTTP + tunnel (ChatGPT) | ✅ `make serve` or Docker — `/mcp` proxied on same host as UI |
 | REST API (v1.1.0) | ✅ unified in `worldkeep-serve` — [docs/rest-api.md](./docs/rest-api.md) |
 | Laravel web UI (v1.2.0 WIP) | ✅ dashboard + approvals under `web/` — `make serve` |

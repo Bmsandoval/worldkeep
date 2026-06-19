@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -206,4 +207,68 @@ func (s *Store) CountCampaignSeats(ctx context.Context, campaignID string) (int,
 	var n int
 	err := s.db.QueryRowContext(ctx, `SELECT COUNT(*) FROM campaign_seats WHERE campaign_id = ?`, campaignID).Scan(&n)
 	return n, err
+}
+
+type SeatHandoffResult struct {
+	Seat       CampaignSeat `json:"seat"`
+	AuditEvent Event        `json:"audit_event"`
+}
+
+func (s *Store) HandoffSeat(ctx context.Context, seatID, controller string, userID *string, reason string, sessionID *string) (SeatHandoffResult, error) {
+	before, err := s.GetSeat(ctx, seatID)
+	if err != nil {
+		return SeatHandoffResult{}, err
+	}
+	seat, err := s.AssignSeatController(ctx, seatID, controller, userID)
+	if err != nil {
+		return SeatHandoffResult{}, err
+	}
+
+	summary := fmt.Sprintf("Seat %s (%s): %s → %s", seat.ID, seat.DisplayName, before.Controller, seat.Controller)
+	if strings.TrimSpace(reason) != "" {
+		summary += " — " + strings.TrimSpace(reason)
+	}
+
+	meta := map[string]any{
+		"seat_id":    seat.ID,
+		"from":       before.Controller,
+		"to":         seat.Controller,
+		"seat_type":  seat.SeatType,
+		"display_name": seat.DisplayName,
+	}
+	if before.ActorID != nil {
+		meta["actor_id"] = *before.ActorID
+	}
+	if seat.ControllerUserID != nil {
+		meta["controller_user_id"] = *seat.ControllerUserID
+	}
+	if strings.TrimSpace(reason) != "" {
+		meta["reason"] = strings.TrimSpace(reason)
+	}
+	metaRaw, _ := json.Marshal(meta)
+
+	ev := Event{
+		ID:         "event_" + uuid.NewString()[:8],
+		CampaignID: seat.CampaignID,
+		SessionID:  sessionID,
+		Title:      "seat_handoff",
+		Summary:    summary,
+		EntityIDs:  metaRaw,
+	}
+	if err := s.AddEvent(ctx, ev); err != nil {
+		return SeatHandoffResult{}, err
+	}
+
+	if sessionID != nil && seat.SeatType == "player" && seat.Controller == "human" {
+		_, _ = s.SetFloorSeat(ctx, *sessionID, seat.ID)
+	}
+
+	return SeatHandoffResult{Seat: seat, AuditEvent: ev}, nil
+}
+
+func (s *Store) ReleaseSeatToAI(ctx context.Context, seatID, reason string, sessionID *string) (SeatHandoffResult, error) {
+	if reason == "" {
+		reason = "Released seat to AI control"
+	}
+	return s.HandoffSeat(ctx, seatID, "ai", nil, reason, sessionID)
 }

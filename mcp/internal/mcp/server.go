@@ -131,6 +131,12 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleCreatePlayerSeat(ctx, args)
 	case "assign_seat_controller":
 		return s.handleAssignSeatController(ctx, args)
+	case "handoff_seat":
+		return s.handleHandoffSeat(ctx, args)
+	case "release_seat_to_ai":
+		return s.handleReleaseSeatToAI(ctx, args)
+	case "get_session_floor":
+		return s.handleGetSessionFloor(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}

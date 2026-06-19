@@ -174,5 +174,24 @@ func toolDefs() []map[string]any {
 				"controller":           strProp("human or ai"),
 				"controller_user_id":   strProp("Required when controller is human"),
 			}, []string{"seat_id", "controller"}, false, false),
+		tool("handoff_seat",
+			"Hand off seat control with audit log (host/DM only).",
+			map[string]any{
+				"seat_id":            strProp("Seat id"),
+				"controller":         strProp("human or ai"),
+				"controller_user_id": strProp("Required when controller is human"),
+				"reason":             strProp("Why the handoff happened"),
+				"session_id":         strProp("Optional session for audit linkage"),
+			}, []string{"seat_id", "controller"}, false, false),
+		tool("release_seat_to_ai",
+			"Release a seat back to AI control (shorthand handoff).",
+			map[string]any{
+				"seat_id":    strProp("Seat id"),
+				"reason":     strProp("Why the participant left"),
+				"session_id": strProp("Optional session for audit linkage"),
+			}, []string{"seat_id"}, false, false),
+		tool("get_session_floor",
+			"Who has the narrative floor in the open session (player-led default).",
+			map[string]any{"session_id": strProp("Session id (defaults to open session)")}, nil, true, false),
 	}
 }
