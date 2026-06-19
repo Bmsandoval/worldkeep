@@ -12,6 +12,17 @@ return [
 
     'api_token' => env('WORLDKEEP_API_TOKEN'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | MCP OAuth (ChatGPT connector — RFC 9728, in-process Laravel /mcp)
+    |--------------------------------------------------------------------------
+    */
+    'mcp' => [
+        'public_url' => env('WORLDKEEP_MCP_PUBLIC_URL'),
+        'cognito_issuer' => env('WORLDKEEP_COGNITO_ISSUER', env('COGNITO_ISSUER')),
+        'oauth_scopes' => ['openid', 'email'],
+    ],
+
     'timeout_seconds' => (int) env('WORLDKEEP_HTTP_TIMEOUT', 15),
 
     'srd_version' => env('WORLDKEEP_SRD_VERSION', 'srd-2014'),

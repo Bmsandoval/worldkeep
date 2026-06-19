@@ -29,7 +29,9 @@ docker run --rm -p 8080:80 worldkeep:local
 | `DB_CONNECTION` | `sqlite` (local) / `pgsql` (prod) | Laravel + WorldKeep tables share one database |
 | `WORLDKEEP_CAMPAIGN_ID` | `campaign_001` (Blackport seed) | Default campaign when route omits context |
 | `WORLDKEEP_ROLE` | `owner` | `owner` \| `dm` \| `player` — gates commit + `dm` scope |
-| `WORLDKEEP_API_TOKEN` | *(empty)* | If set, require `Authorization: Bearer <token>` on REST (MCP exempt) |
+| `WORLDKEEP_API_TOKEN` | *(empty)* | If set, require `Authorization: Bearer <token>` on REST (MCP uses Cognito OAuth instead) |
+| `WORLDKEEP_MCP_PUBLIC_URL` | `{APP_URL}/mcp` | RFC 9728 `resource` id for ChatGPT OAuth |
+| `WORLDKEEP_COGNITO_ISSUER` | *(from pool)* | Override Cognito issuer in protected-resource metadata |
 | `WORLDKEEP_SRD_VERSION` | `srd-2014` | Open5e document filter |
 
 See [ex.env](../ex.env) and issue **#83** for auth stub details.

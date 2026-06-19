@@ -2,7 +2,7 @@
 
 Public-facing text for the ChatGPT Apps directory and connector onboarding. **User-facing tone** — describe value to players/DMs, not MCP internals.
 
-Technical setup: [chatgpt-mcp-setup.md](./chatgpt-mcp-setup.md) · Production URL: `https://worldkeep.bsandoval.dev/mcp`
+Technical setup: [chatgpt-mcp-oauth.md](./chatgpt-mcp-oauth.md) · [chatgpt-mcp-setup.md](./chatgpt-mcp-setup.md) · Production URL: `https://worldkeep.bsandoval.dev/mcp`
 
 ---
 

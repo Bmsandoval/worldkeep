@@ -231,6 +231,9 @@ final class ToolDefinitions
                 'destructiveHint' => $destructive,
                 'openWorldHint' => false,
             ],
+            'securitySchemes' => [
+                ['type' => 'oauth2', 'scopes' => ['openid', 'email']],
+            ],
         ];
     }
 

@@ -42,6 +42,27 @@ final class Protocol
     }
 
     /**
+     * ChatGPT account-linking trigger — HTTP WWW-Authenticate + tool result _meta.
+     *
+     * @return array<string, mixed>
+     */
+    public static function toolAuthError(string $wwwAuthenticate): array
+    {
+        return [
+            'content' => [
+                [
+                    'type' => 'text',
+                    'text' => 'Not signed in to WorldKeep. Connect your WorldKeep account to use this tool.',
+                ],
+            ],
+            'isError' => true,
+            '_meta' => [
+                'mcp/www_authenticate' => [$wwwAuthenticate],
+            ],
+        ];
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public static function rpcError(int $code, string $message): array

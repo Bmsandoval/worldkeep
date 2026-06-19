@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\McpController;
+use App\Http\Controllers\McpOAuthMetadataController;
 use App\Http\Middleware\WorldKeepBearerAuth;
 use App\Http\Middleware\WorldKeepCors;
 use Illuminate\Foundation\Application;
@@ -15,6 +16,14 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
+            Route::middleware(['worldkeep.cors'])
+                ->group(function () {
+                    Route::get('/.well-known/oauth-protected-resource', McpOAuthMetadataController::class);
+                    Route::get('/.well-known/oauth-protected-resource/{path}', McpOAuthMetadataController::class)
+                        ->where('path', '.*');
+                    Route::get('/mcp/.well-known/oauth-protected-resource', McpOAuthMetadataController::class);
+                });
+
             Route::middleware(['worldkeep.cors', 'worldkeep.bearer'])
                 ->group(function () {
                     Route::get('/healthz', fn () => response()->json(['status' => 'ok']));
