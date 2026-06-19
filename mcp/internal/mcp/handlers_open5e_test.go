@@ -77,6 +77,30 @@ func TestGetRulesSectionTool(t *testing.T) {
 	}
 }
 
+func TestSearchSpellsTool(t *testing.T) {
+	srv := testServerWithOpen5e(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/v2/spells/" {
+			_, _ = w.Write([]byte(`{"results":[{"key":"srd_fireball","name":"Fireball","level":3,"document":{"key":"srd-2014"},"desc":"Boom"}]}`))
+		}
+	})
+	text := callTool(t, srv, "search_spells", map[string]any{"query": "fireball"})
+	if !strings.Contains(text, "srd_fireball") {
+		t.Fatalf("unexpected spell search: %s", text)
+	}
+}
+
+func TestGetSpellTool(t *testing.T) {
+	srv := testServerWithOpen5e(t, func(w http.ResponseWriter, r *http.Request) {
+		if strings.Contains(r.URL.Path, "/spells/srd_fireball/") {
+			_, _ = w.Write([]byte(`{"key":"srd_fireball","name":"Fireball","level":3,"document":{"key":"srd-2014"},"desc":"Boom"}`))
+		}
+	})
+	text := callTool(t, srv, "get_spell", map[string]any{"key": "srd_fireball"})
+	if !strings.Contains(text, "Fireball") {
+		t.Fatalf("unexpected get_spell: %s", text)
+	}
+}
+
 func TestSearchRulesReferenceRequiresQuery(t *testing.T) {
 	srv := testServerWithOpen5e(t, func(w http.ResponseWriter, r *http.Request) {})
 	raw, _ := json.Marshal(map[string]any{})

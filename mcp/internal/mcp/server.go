@@ -143,6 +143,16 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleSearchRulesReference(ctx, args)
 	case "get_rules_section":
 		return s.handleGetRulesSection(ctx, args)
+	case "search_spells":
+		return s.handleSearchSpells(ctx, args)
+	case "get_spell":
+		return s.handleGetSpell(ctx, args)
+	case "search_creatures":
+		return s.handleSearchCreatures(ctx, args)
+	case "get_creature":
+		return s.handleGetCreature(ctx, args)
+	case "get_condition":
+		return s.handleGetCondition(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
