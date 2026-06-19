@@ -519,6 +519,66 @@ h1, h2, h3, .h1, .h2, .h3 {
     color: var(--app-secondary);
 }
 
+.sidebar-controls {
+    padding: 0.875rem 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-controls-mobile {
+    background: var(--app-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sidebar-control-form .sidebar-section-label {
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.sidebar-controls-mobile:has(.sidebar-select) {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.sidebar-controls-mobile .sidebar-control-form:has(.sidebar-select) {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.sidebar-controls-mobile .sidebar-control-form .sidebar-section-label {
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.sidebar-controls-mobile .sidebar-control-form .sidebar-select {
+    width: auto;
+    min-width: 12rem;
+}
+
+.sidebar-select {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.8rem;
+}
+
+.sidebar-select:focus {
+    background-color: rgba(255, 255, 255, 0.12);
+    border-color: var(--app-secondary);
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(104, 173, 183, 0.25);
+}
+
+.sidebar-spoilers-switch .form-check-label {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.sidebar-spoilers-switch .form-check-input {
+    cursor: pointer;
+}
+
 .sidebar-footer {
     padding: 0.875rem 1.25rem;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
@@ -670,4 +730,9 @@ h1, h2, h3, .h1, .h2, .h3 {
     .auth-panel-brand {
         display: none !important;
     }
+}
+
+.spoiler-card {
+    border-color: #ffc107;
+    background: linear-gradient(180deg, rgba(255, 193, 7, 0.08) 0%, rgba(255, 255, 255, 1) 100%);
 }

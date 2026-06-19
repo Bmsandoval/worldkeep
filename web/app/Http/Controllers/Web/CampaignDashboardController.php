@@ -19,8 +19,8 @@ class CampaignDashboardController extends Controller
             'campaign' => $dashboard['campaign'] ?? [],
             'openSession' => $dashboard['open_session'] ?? null,
             'activePlots' => $dashboard['active_plots'] ?? [],
+            'secrets' => $dashboard['secrets'] ?? [],
             'recentEvents' => $dashboard['recent_events'] ?? [],
-            'pendingCount' => (int) ($dashboard['pending_update_count'] ?? 0),
             'continuityWarnings' => $dashboard['continuity_warnings'] ?? [],
             'scope' => $dashboard['scope'] ?? 'party',
         ]);

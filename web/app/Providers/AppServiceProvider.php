@@ -2,11 +2,13 @@
 
 namespace App\Providers;
 
+use App\Support\UserUiPreferences;
 use App\Services\WorldKeep\Engine;
 use App\Services\WorldKeep\Mcp\Server as McpServer;
 use App\Services\WorldKeep\Open5e\Client as Open5eClient;
 use App\Services\WorldKeep\Store;
 use App\Services\WorldKeepClient;
+use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -40,12 +42,26 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(WorldKeepClient::class, fn ($app) => new WorldKeepClient(
             engine: $app->make(Engine::class),
-            campaignId: (string) config('worldkeep.campaign_id'),
+            preferences: $app->make(UserUiPreferences::class),
         ));
     }
 
     public function boot(): void
     {
-        //
+        View::composer('layouts.dashboard', function ($view): void {
+            if (! auth()->check()) {
+                return;
+            }
+
+            $preferences = $this->app->make(UserUiPreferences::class);
+            $store = $this->app->make(Store::class);
+
+            $view->with([
+                'sidebarCampaigns' => $store->listCampaigns(),
+                'sidebarActiveCampaignId' => $preferences->activeCampaignId(),
+                'sidebarAdvancedOptions' => $preferences->advancedOptionsEnabled(),
+                'sidebarShowSpoilers' => $preferences->showSpoilersEnabled(),
+            ]);
+        });
     }
 }

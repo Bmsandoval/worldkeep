@@ -16,7 +16,7 @@ class CampaignUiTest extends TestCase
         $this->get(route('app.campaign.dashboard'))->assertRedirect(route('app.login'));
     }
 
-    public function test_authenticated_user_sees_dashboard_from_go_engine(): void
+    public function test_authenticated_user_sees_dashboard(): void
     {
         $this->mock(WorldKeepClient::class, function ($mock) {
             $mock->shouldReceive('dashboard')
@@ -27,8 +27,9 @@ class CampaignUiTest extends TestCase
                     'active_plots' => [
                         ['id' => 'plot_missing_prince', 'name' => 'The Missing Prince', 'summary' => 'Find the heir.'],
                     ],
-                    'recent_events' => [],
-                    'pending_update_count' => 2,
+                    'recent_events' => [
+                        ['summary' => 'Party arrived at the docks.', 'created_at' => '2026-06-18'],
+                    ],
                     'continuity_warnings' => [],
                     'scope' => 'party',
                 ]);
@@ -42,73 +43,17 @@ class CampaignUiTest extends TestCase
         $response->assertSee('Campaign dashboard');
         $response->assertSee('Shadows of Blackport');
         $response->assertSee('The Missing Prince');
-        $response->assertSee('2');
+        $response->assertSee('World browser');
+        $response->assertDontSee('Approvals');
+        $response->assertDontSee('Pending approvals');
     }
 
-    public function test_authenticated_user_sees_approval_queue(): void
+    public function test_legacy_approvals_url_redirects_to_dashboard(): void
     {
-        $this->mock(WorldKeepClient::class, function ($mock) {
-            $mock->shouldReceive('listPendingUpdates')
-                ->once()
-                ->andReturn([
-                    [
-                        'id' => 'update_test01',
-                        'reason' => 'Add a dockside rumor.',
-                        'created_at' => '2026-06-18T12:00:00Z',
-                        'proposed_changes' => [['op' => 'add_fact']],
-                        'warnings' => [],
-                    ],
-                ]);
-        });
-
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user)->get(route('app.campaign.approvals'));
-
-        $response->assertOk();
-        $response->assertSee('Canon approval queue');
-        $response->assertSee('update_test01');
-        $response->assertSee('Add a dockside rumor.');
-    }
-
-    public function test_commit_redirects_after_go_engine_accepts_update(): void
-    {
-        $this->mock(WorldKeepClient::class, function ($mock) {
-            $mock->shouldReceive('commitUpdate')
-                ->once()
-                ->with('update_test01')
-                ->andReturn([
-                    'status' => 'committed',
-                    'update_id' => 'update_test01',
-                ]);
-        });
-
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->post(route('app.campaign.approvals.commit', 'update_test01'));
-
-        $response->assertRedirect(route('app.campaign.approvals'));
-        $response->assertSessionHas('status');
-    }
-
-    public function test_reject_redirects_after_go_engine_rejects_update(): void
-    {
-        $this->mock(WorldKeepClient::class, function ($mock) {
-            $mock->shouldReceive('rejectUpdate')
-                ->once()
-                ->with('update_test01', 'Conflicts with session ruling.')
-                ->andReturn([
-                    'status' => 'rejected',
-                    'update_id' => 'update_test01',
-                ]);
-        });
-
-        $user = User::factory()->create();
-
-        $response = $this->actingAs($user)->post(route('app.campaign.approvals.reject', 'update_test01'), [
-            'reason' => 'Conflicts with session ruling.',
-        ]);
-
-        $response->assertRedirect(route('app.campaign.approvals'));
+        $this->actingAs($user)
+            ->get('/app/campaign/approvals')
+            ->assertRedirect('/app/campaign/dashboard');
     }
 }

@@ -12,7 +12,7 @@
                 <span class="lp-accent">consistent</span>.
             </h1>
             <p class="lp-subheadline">
-                Campaign dashboard, canon approvals, world browser, and session history —
+                Campaign dashboard, world browser, and session history —
                 one place for GMs and AI agents to read and update shared lore.
             </p>
             <div class="lp-hero-actions">
@@ -29,10 +29,10 @@
         <div class="lp-features-inner">
             <div class="lp-feature">
                 <div class="lp-feature-icon">
-                    <i class="ph ph-check-square"></i>
+                    <i class="ph ph-book-open"></i>
                 </div>
-                <h2>Canon approvals</h2>
-                <p>Review proposed world updates before they land. Commit or reject with reasons and conflict warnings.</p>
+                <h2>Automatic canon</h2>
+                <p>What your AI DM narrates becomes campaign truth — stored, searchable, and consistent across sessions.</p>
             </div>
             <div class="lp-feature">
                 <div class="lp-feature-icon">

@@ -43,11 +43,14 @@ class WorldBrowserTest extends TestCase
                 ->with('npc_finn')
                 ->andReturn([
                     'id' => 'npc_finn',
+                    'campaign_id' => 'campaign_001',
                     'type' => 'npc',
                     'name' => 'Finn',
                     'summary' => 'Dock spy.',
                     'data' => ['role' => 'informant'],
                 ]);
+            $mock->shouldReceive('activeCampaignId')
+                ->andReturn('campaign_001');
         });
 
         $user = User::factory()->create();
@@ -123,6 +126,7 @@ class SessionTimelineTest extends TestCase
                 ->andReturn([
                     'session' => [
                         'id' => 'session_abc',
+                        'campaign_id' => 'campaign_001',
                         'title' => 'Dockside intrigue',
                         'status' => 'closed',
                         'started_at' => '2026-06-01',
@@ -135,6 +139,8 @@ class SessionTimelineTest extends TestCase
                         ['entity_id' => 'npc_finn', 'change_op' => 'add_fact', 'created_at' => '2026-06-01'],
                     ],
                 ]);
+            $mock->shouldReceive('activeCampaignId')
+                ->andReturn('campaign_001');
         });
 
         $user = User::factory()->create();

@@ -13,6 +13,12 @@
         </a>
     </div>
 
+    @if ($showSpoilers ?? false)
+        <div class="alert alert-warning py-2 px-3 small mb-4">
+            <i class="ph ph-eye ph-icon"></i> Spoilers on — showing DM-only secrets and hidden facts.
+        </div>
+    @endif
+
     <form method="GET" action="{{ route('app.campaign.world.index') }}" class="row g-2 mb-4">
         <div class="col-md-8">
             <input type="search" name="q" value="{{ $searchQuery }}" class="form-control" placeholder="Search entities and facts…">
@@ -31,7 +37,13 @@
                class="btn btn-sm {{ $activeType === '' ? 'btn-app-primary' : 'btn-outline-secondary' }}">All</a>
             @foreach ($entityTypes as $type)
                 <a href="{{ route('app.campaign.world.index', ['type' => $type]) }}"
-                   class="btn btn-sm {{ $activeType === $type ? 'btn-app-primary' : 'btn-outline-secondary' }}">{{ ucfirst($type) }}s</a>
+                   class="btn btn-sm {{ $activeType === $type ? 'btn-app-primary' : 'btn-outline-secondary' }}">
+                    @if ($type === 'secret')
+                        Secrets
+                    @else
+                        {{ ucfirst($type) }}s
+                    @endif
+                </a>
             @endforeach
         </div>
     @endif
@@ -41,6 +53,11 @@
             <h2 class="h5">Matching facts</h2>
             @foreach ($facts as $fact)
                 <div class="border-bottom py-2">
+                    <div class="d-flex flex-wrap align-items-center gap-2">
+                        @if (($fact['visibility'] ?? '') === 'dm_only')
+                            <span class="badge text-bg-warning">Spoiler</span>
+                        @endif
+                    </div>
                     <div>{{ $fact['text'] ?? json_encode($fact) }}</div>
                     @if (!empty($fact['entity_id']))
                         <a href="{{ route('app.campaign.world.show', $fact['entity_id']) }}" class="small">{{ $fact['entity_id'] }}</a>
@@ -53,14 +70,17 @@
     <section>
         <h2 class="h5">{{ $searchQuery !== '' ? 'Matching entities' : 'Entities' }}</h2>
         @forelse ($entities as $entity)
-            <a href="{{ route('app.campaign.world.show', $entity['id']) }}" class="card card-app mb-2 text-decoration-none text-body">
+            <a href="{{ route('app.campaign.world.show', $entity['id']) }}"
+               class="card card-app mb-2 text-decoration-none text-body {{ ($entity['type'] ?? '') === 'secret' ? 'spoiler-card' : '' }}">
                 <div class="card-body py-3">
                     <div class="d-flex justify-content-between gap-2">
                         <div>
                             <div class="fw-semibold">{{ $entity['name'] ?? $entity['id'] }}</div>
                             <div class="text-muted small">{{ $entity['summary'] ?? '' }}</div>
                         </div>
-                        <span class="badge text-bg-light align-self-start">{{ $entity['type'] ?? 'entity' }}</span>
+                        <span class="badge {{ ($entity['type'] ?? '') === 'secret' ? 'text-bg-warning' : 'text-bg-light' }} align-self-start">
+                            {{ ($entity['type'] ?? '') === 'secret' ? 'Secret' : ($entity['type'] ?? 'entity') }}
+                        </span>
                     </div>
                 </div>
             </a>

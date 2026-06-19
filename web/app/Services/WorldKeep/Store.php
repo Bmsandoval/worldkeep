@@ -55,6 +55,17 @@ class Store
         return Campaign::fromRow($row);
     }
 
+    /**
+     * @return list<Campaign>
+     */
+    public function listCampaigns(): array
+    {
+        return array_map(
+            static fn (object $row) => Campaign::fromRow($row),
+            DB::select('SELECT id, name, system, created_at FROM campaigns ORDER BY name ASC, id ASC'),
+        );
+    }
+
     public function upsertEntity(Entity $entity): void
     {
         $data = $entity->data !== '' ? $entity->data : '{}';

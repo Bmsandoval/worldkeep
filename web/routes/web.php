@@ -3,8 +3,9 @@
 use App\Http\Controllers\CognitoAuthController;
 use App\Http\Controllers\Web\AuthSessionController;
 use App\Http\Controllers\Web\CampaignDashboardController;
-use App\Http\Controllers\Web\CanonApprovalsController;
 use App\Http\Controllers\Web\HomeController;
+use App\Http\Controllers\Web\SettingsController;
+use App\Http\Controllers\Web\SidebarPreferencesController;
 use App\Http\Controllers\Web\SessionTimelineController;
 use App\Http\Controllers\Web\WorldBrowserController;
 use Illuminate\Support\Facades\Route;
@@ -35,14 +36,19 @@ Route::prefix('app')->name('app.')->group(function () {
     Route::get('/auth/redirect', [AuthSessionController::class, 'redirect'])->name('auth.redirect');
     Route::post('/logout', [AuthSessionController::class, 'logout'])->name('logout')->middleware('auth');
 
-    Route::middleware('auth')->prefix('campaign')->name('campaign.')->group(function () {
-        Route::get('/dashboard', CampaignDashboardController::class)->name('dashboard');
-        Route::get('/approvals', [CanonApprovalsController::class, 'index'])->name('approvals');
-        Route::post('/approvals/{updateId}/commit', [CanonApprovalsController::class, 'commit'])->name('approvals.commit');
-        Route::post('/approvals/{updateId}/reject', [CanonApprovalsController::class, 'reject'])->name('approvals.reject');
-        Route::get('/world', [WorldBrowserController::class, 'index'])->name('world.index');
-        Route::get('/world/{entityId}', [WorldBrowserController::class, 'show'])->name('world.show');
-        Route::get('/sessions', [SessionTimelineController::class, 'index'])->name('sessions.index');
-        Route::get('/sessions/{sessionId}', [SessionTimelineController::class, 'show'])->name('sessions.show');
+    Route::middleware('auth')->group(function () {
+        Route::get('/settings', [SettingsController::class, 'edit'])->name('settings');
+        Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('/preferences/spoilers', [SidebarPreferencesController::class, 'updateSpoilers'])->name('preferences.spoilers');
+
+        Route::prefix('campaign')->name('campaign.')->group(function () {
+            Route::post('/switch', [SidebarPreferencesController::class, 'switchCampaign'])->name('switch');
+            Route::get('/dashboard', CampaignDashboardController::class)->name('dashboard');
+            Route::redirect('/approvals', '/app/campaign/dashboard');
+            Route::get('/world', [WorldBrowserController::class, 'index'])->name('world.index');
+            Route::get('/world/{entityId}', [WorldBrowserController::class, 'show'])->name('world.show');
+            Route::get('/sessions', [SessionTimelineController::class, 'index'])->name('sessions.index');
+            Route::get('/sessions/{sessionId}', [SessionTimelineController::class, 'show'])->name('sessions.show');
+        });
     });
 });

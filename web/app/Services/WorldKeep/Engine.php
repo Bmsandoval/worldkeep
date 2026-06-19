@@ -48,6 +48,9 @@ class Engine
             $plots = $this->store->listActivePlots($cid, $readScope);
             $events = $this->store->getRecentEvents($cid, $limit);
             $pending = $this->store->listPendingUpdates($cid);
+            $secrets = $readScope->includesDmOnly()
+                ? $this->store->listEntitiesByType($cid, 'secret', $readScope)
+                : [];
         } catch (Throwable $e) {
             throw ApiError::internal($e);
         }
@@ -66,6 +69,7 @@ class Engine
             'campaign' => $campaign->toArray(),
             'open_session' => $openSession?->toArray(),
             'active_plots' => array_map(static fn (Entity $e) => $e->toArray(), $plots),
+            'secrets' => array_map(static fn (Entity $e) => $e->toArray(), $secrets),
             'recent_events' => array_map(static fn ($e) => $e->toArray(), $events),
             'pending_updates' => $pendingEnriched,
             'continuity_warnings' => array_map(static fn (ConflictWarning $w) => $w->toArray(), $continuityWarnings),

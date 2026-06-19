@@ -3,14 +3,16 @@
 namespace App\Services;
 
 use App\Services\WorldKeep\ApiError;
+use App\Services\WorldKeep\Data\Campaign;
 use App\Services\WorldKeep\Engine;
+use App\Support\UserUiPreferences;
 use RuntimeException;
 
 class WorldKeepClient
 {
     public function __construct(
         private readonly Engine $engine,
-        private readonly string $campaignId,
+        private readonly UserUiPreferences $preferences,
     ) {}
 
     public static function fromConfig(): self
@@ -18,14 +20,28 @@ class WorldKeepClient
         return app(self::class);
     }
 
-    public function dashboard(int $eventLimit = 5, string $scope = 'party'): array
+    public function activeCampaignId(): string
     {
-        return $this->engine->campaignDashboard(null, $eventLimit, $scope);
+        return $this->preferences->activeCampaignId();
+    }
+
+    public function activeCampaign(): Campaign
+    {
+        return $this->preferences->activeCampaign();
+    }
+
+    public function dashboard(int $eventLimit = 5, ?string $scope = null): array
+    {
+        return $this->engine->campaignDashboard(
+            $this->activeCampaignId(),
+            $eventLimit,
+            $this->readScope($scope),
+        );
     }
 
     public function listPendingUpdates(): array
     {
-        return $this->engine->listPendingUpdates(null);
+        return $this->engine->listPendingUpdates($this->activeCampaignId());
     }
 
     public function commitUpdate(string $updateId, ?string $sessionId = null): array
@@ -43,29 +59,35 @@ class WorldKeepClient
     }
 
     /** @return array<int, array<string, mixed>> */
-    public function listEntities(?string $type = null, string $scope = 'party'): array
+    public function listEntities(?string $type = null, ?string $scope = null): array
     {
         $entities = $this->run(fn () => $this->engine->listEntities(
-            null,
+            $this->activeCampaignId(),
             $type ?? '',
-            $scope,
+            $this->readScope($scope),
         ));
 
         return array_map(fn ($entity) => $this->normalizeEntity($entity->toArray()), $entities);
     }
 
     /** @return array<string, mixed> */
-    public function getEntity(string $entityId, string $scope = 'party'): array
+    public function getEntity(string $entityId, ?string $scope = null): array
     {
-        $entity = $this->run(fn () => $this->engine->getEntity($entityId, $scope));
+        $entity = $this->run(fn () => $this->engine->getEntity($entityId, $this->readScope($scope)));
 
         return $this->normalizeEntity($entity->toArray());
     }
 
     /** @return array<string, mixed> */
-    public function searchWorld(string $query, int $limit = 20, string $scope = 'party', bool $hybrid = false): array
+    public function searchWorld(string $query, int $limit = 20, ?string $scope = null, bool $hybrid = false): array
     {
-        $result = $this->run(fn () => $this->engine->searchWorld(null, $query, $limit, $scope, $hybrid));
+        $result = $this->run(fn () => $this->engine->searchWorld(
+            $this->activeCampaignId(),
+            $query,
+            $limit,
+            $this->readScope($scope),
+            $hybrid,
+        ));
 
         $result['entities'] = array_map(
             fn (array $row) => $this->normalizeEntity($row),
@@ -78,7 +100,7 @@ class WorldKeepClient
     /** @return array<int, array<string, mixed>> */
     public function listSessions(int $limit = 20): array
     {
-        $sessions = $this->run(fn () => $this->engine->listSessions(null, $limit));
+        $sessions = $this->run(fn () => $this->engine->listSessions($this->activeCampaignId(), $limit));
 
         return array_map(static fn ($session) => $session->toArray(), $sessions);
     }
@@ -101,6 +123,11 @@ class WorldKeepClient
         } catch (ApiError $e) {
             throw new RuntimeException('WorldKeep API error: '.$e->getMessage(), 0, $e);
         }
+    }
+
+    private function readScope(?string $scope): string
+    {
+        return $scope ?? $this->preferences->readScope();
     }
 
     /** @param  array<string, mixed>  $entity */

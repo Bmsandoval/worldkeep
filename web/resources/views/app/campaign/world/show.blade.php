@@ -7,7 +7,7 @@
         <div>
             <h1 class="h3 mb-1">{{ $entity['name'] ?? $entity['id'] }}</h1>
             <p class="text-muted mb-0">
-                <span class="badge text-bg-light">{{ $entity['type'] ?? 'entity' }}</span>
+                <span class="badge {{ ($entity['type'] ?? '') === 'secret' ? 'text-bg-warning' : 'text-bg-light' }}">{{ $entity['type'] ?? 'entity' }}</span>
                 <code class="ms-1">{{ $entity['id'] ?? '' }}</code>
             </p>
         </div>
@@ -15,6 +15,12 @@
             <i class="ph ph-globe-hemisphere-west ph-icon"></i> World browser
         </a>
     </div>
+
+    @if (($entity['type'] ?? '') === 'secret' && ($showSpoilers ?? false))
+        <div class="alert alert-warning py-2 px-3 small mb-4">
+            <i class="ph ph-eye ph-icon"></i> DM secret — normally hidden from party view.
+        </div>
+    @endif
 
     @if (!empty($entity['summary']))
         <div class="card card-app mb-4">

@@ -47,11 +47,6 @@
                         <i class="ph ph-gauge"></i>
                         Dashboard
                     </a>
-                    <a href="{{ route('app.campaign.approvals') }}"
-                       class="sidebar-nav-link {{ request()->routeIs('app.campaign.approvals*') ? 'active' : '' }}">
-                        <i class="ph ph-check-square"></i>
-                        Approvals
-                    </a>
                     <a href="{{ route('app.campaign.world.index') }}"
                        class="sidebar-nav-link {{ request()->routeIs('app.campaign.world.*') ? 'active' : '' }}">
                         <i class="ph ph-globe-hemisphere-west"></i>
@@ -62,7 +57,15 @@
                         <i class="ph ph-clock-counter-clockwise"></i>
                         Sessions
                     </a>
+                    <div class="sidebar-section-label mt-3">Account</div>
+                    <a href="{{ route('app.settings') }}"
+                       class="sidebar-nav-link {{ request()->routeIs('app.settings*') ? 'active' : '' }}">
+                        <i class="ph ph-gear"></i>
+                        Settings
+                    </a>
                 </nav>
+
+                @include('partials.sidebar-controls', ['controls' => ['spoilers']])
 
                 <div class="sidebar-footer">
                     <div class="sidebar-user">
@@ -83,15 +86,19 @@
 
         <div class="app-content">
             @auth
+                @include('partials.sidebar-controls', ['mobile' => true, 'controls' => ['campaign']])
+                <div class="d-lg-none">
+                    @include('partials.sidebar-controls', ['mobile' => true, 'controls' => ['spoilers']])
+                </div>
                 <nav class="app-mobile-nav d-lg-none">
                     <a href="{{ route('app.campaign.dashboard') }}"
                        class="app-mobile-nav-link {{ request()->routeIs('app.campaign.dashboard') ? 'active' : '' }}">Dashboard</a>
-                    <a href="{{ route('app.campaign.approvals') }}"
-                       class="app-mobile-nav-link {{ request()->routeIs('app.campaign.approvals*') ? 'active' : '' }}">Approvals</a>
                     <a href="{{ route('app.campaign.world.index') }}"
                        class="app-mobile-nav-link {{ request()->routeIs('app.campaign.world.*') ? 'active' : '' }}">World</a>
                     <a href="{{ route('app.campaign.sessions.index') }}"
                        class="app-mobile-nav-link {{ request()->routeIs('app.campaign.sessions.*') ? 'active' : '' }}">Sessions</a>
+                    <a href="{{ route('app.settings') }}"
+                       class="app-mobile-nav-link {{ request()->routeIs('app.settings*') ? 'active' : '' }}">Settings</a>
                 </nav>
             @endauth
 

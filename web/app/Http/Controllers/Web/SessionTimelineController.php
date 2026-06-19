@@ -21,6 +21,10 @@ class SessionTimelineController extends Controller
     {
         $workspace = $this->worldkeep->getSession($sessionId);
 
+        if (($workspace['session']['campaign_id'] ?? '') !== $this->worldkeep->activeCampaignId()) {
+            abort(404);
+        }
+
         return view('app.campaign.sessions.show', [
             'session' => $workspace['session'] ?? [],
             'events' => $workspace['events'] ?? [],

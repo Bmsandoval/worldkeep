@@ -23,14 +23,14 @@
 
             <div>
                 <h2 class="auth-brand-headline">
-                    Campaign canon, approvals, and session history in one place.
+                    Campaign canon, world browser, and session history in one place.
                 </h2>
                 <ul class="list-unstyled vstack gap-4 mb-0">
                     <li class="d-flex align-items-start gap-3">
-                        <i class="ph ph-check-square auth-feature-icon"></i>
+                        <i class="ph ph-book-open auth-feature-icon"></i>
                         <div>
-                            <div class="fw-semibold">Canon approvals</div>
-                            <div class="auth-feature-sub">Review and commit proposed world changes before they land.</div>
+                            <div class="fw-semibold">Automatic canon</div>
+                            <div class="auth-feature-sub">Narrated story beats become durable campaign memory.</div>
                         </div>
                     </li>
                     <li class="d-flex align-items-start gap-3">

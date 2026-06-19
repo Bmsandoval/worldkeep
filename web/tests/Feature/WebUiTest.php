@@ -27,8 +27,9 @@ class WebUiTest extends TestCase
             ->get('/app')
             ->assertOk()
             ->assertSee('Welcome back')
-            ->assertSee('Approvals')
-            ->assertSee('Dashboard');
+            ->assertSee('Settings')
+            ->assertSee('Dashboard')
+            ->assertDontSee('Approvals');
     }
 
     public function test_login_page_shows_cognito_setup_hint_when_not_configured(): void
