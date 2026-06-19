@@ -154,5 +154,25 @@ func toolDefs() []map[string]any {
 				"campaign_id": campaignID,
 				"role":        strProp("owner, dm, or player"),
 			}, []string{"role"}, false, false),
+		tool("list_campaign_seats",
+			"List DM and player seats with current controller (human or AI).",
+			map[string]any{"campaign_id": campaignID}, nil, true, false),
+		tool("get_seat",
+			"Return one campaign seat by id.",
+			map[string]any{"seat_id": strProp("Seat id")}, []string{"seat_id"}, true, false),
+		tool("create_player_seat",
+			"Create a player seat linked to a party actor entity.",
+			map[string]any{
+				"campaign_id":  campaignID,
+				"actor_id":     strProp("Party actor entity id"),
+				"display_name": strProp("Optional display name"),
+			}, []string{"actor_id"}, false, false),
+		tool("assign_seat_controller",
+			"Assign human or AI controller to a seat (host/DM only).",
+			map[string]any{
+				"seat_id":              strProp("Seat id"),
+				"controller":           strProp("human or ai"),
+				"controller_user_id":   strProp("Required when controller is human"),
+			}, []string{"seat_id", "controller"}, false, false),
 	}
 }

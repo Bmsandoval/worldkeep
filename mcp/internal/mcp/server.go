@@ -123,6 +123,14 @@ func (s *Server) callTool(ctx context.Context, name string, args json.RawMessage
 		return s.handleImportCampaignMarkdown(ctx, args)
 	case "set_campaign_role":
 		return s.handleSetCampaignRole(ctx, args)
+	case "list_campaign_seats":
+		return s.handleListCampaignSeats(ctx, args)
+	case "get_seat":
+		return s.handleGetSeat(ctx, args)
+	case "create_player_seat":
+		return s.handleCreatePlayerSeat(ctx, args)
+	case "assign_seat_controller":
+		return s.handleAssignSeatController(ctx, args)
 	default:
 		return toolResultError("tool not implemented yet: " + name), nil
 	}
