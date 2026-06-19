@@ -9,6 +9,10 @@ class HomeController extends Controller
 {
     public function index(): View
     {
+        if (auth()->check()) {
+            return view('app.home-auth');
+        }
+
         return view('app.home');
     }
 }

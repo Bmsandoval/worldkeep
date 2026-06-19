@@ -5,4 +5,9 @@ web/.env
 web/vendor/
 web/node_modules/
 web/storage/logs/
+web/storage/framework/views/
+web/storage/framework/cache/
+web/storage/framework/sessions/
+web/bootstrap/cache/*.php
+web/.phpunit.result.cache
 **/*.sqlite

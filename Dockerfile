@@ -34,8 +34,10 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 COPY web/ .
 
 RUN composer dump-autoload --optimize --no-dev \
-    && chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && mkdir -p storage/framework/views storage/framework/cache/data \
+        storage/framework/sessions storage/logs bootstrap/cache database \
+    && chown -R www-data:www-data storage bootstrap/cache database \
+    && chmod -R 775 storage bootstrap/cache database
 
 RUN mkdir -p /var/worldkeep/data \
     && printf '%s\n' \
@@ -44,8 +46,8 @@ RUN mkdir -p /var/worldkeep/data \
         '    ProxyPreserveHost On' \
         '    ProxyPass /mcp http://127.0.0.1:8788/mcp' \
         '    ProxyPassReverse /mcp http://127.0.0.1:8788/mcp' \
-        '    ProxyPass /api http://127.0.0.1:8788/api' \
-        '    ProxyPassReverse /api http://127.0.0.1:8788/api' \
+        '    ProxyPass /api/v1 http://127.0.0.1:8788/api/v1' \
+        '    ProxyPassReverse /api/v1 http://127.0.0.1:8788/api/v1' \
         '    ProxyPass /healthz http://127.0.0.1:8788/healthz' \
         '    ProxyPassReverse /healthz http://127.0.0.1:8788/healthz' \
         '    <Directory /var/www/html/public>' \

@@ -6,7 +6,7 @@ WorldKeep is a continuity layer between AI and long-running campaigns. It stores
 
 ## Status
 
-**Deployable MVP (v1.7.0)** — MCP continuity engine, browser admin UI (v1.1–v1.3), unified Docker hosting, and **Open5e SRD rules tools** on `develop`.
+**Deployable MVP (v1.8.0)** — MCP continuity engine, Cognito Hosted UI + campaign dashboard, unified Docker/Fargate on `worldkeep.bsandoval.dev`, and **Open5e SRD rules tools** on `develop`.
 
 Product spec: [docs/](./docs/) · agent entry: [HANDOFF.md](./HANDOFF.md)
 
@@ -92,7 +92,7 @@ HTTP / ChatGPT: `make serve` or Docker exposes `/mcp` on the same host as the we
 
 - **GitHub:** [Bmsandoval/worldkeep](https://github.com/Bmsandoval/worldkeep)
 - **Integration branch:** `develop`
-- **Latest release:** `v1.7.0` (deployable MVP)
+- **Latest release:** `v1.8.0` (deployable MVP — Cognito prod UI)
 
 ## Maintainer gates
 

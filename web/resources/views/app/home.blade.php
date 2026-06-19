@@ -1,46 +1,66 @@
-@extends('layouts.app')
+@extends('layouts.landing')
 
-@section('title', 'Home — WorldKeep')
+@section('title', 'WorldKeep — Persistent world intelligence for tabletop RPGs')
 
 @section('content')
-    <header class="mb-4">
-        <h1 class="h2 mb-2">WorldKeep</h1>
-        <p class="text-muted mb-0">Persistent world intelligence for AI-assisted tabletop RPGs.</p>
-    </header>
 
-    <div class="card card-app">
-        <div class="card-body p-4">
-            @auth
-                <p class="mb-3">
-                    Signed in as <strong>{{ auth()->user()->name }}</strong>.
-                    Review campaign health and approve canon updates from the dashboard.
-                </p>
-                <div class="d-flex flex-wrap gap-2 mb-3">
-                    <a href="{{ route('app.campaign.dashboard') }}" class="btn btn-app-primary btn-sm">
-                        <i class="ph ph-gauge ph-icon"></i> Campaign dashboard
-                    </a>
-                    <a href="{{ route('app.campaign.approvals') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="ph ph-check-square ph-icon"></i> Approval queue
-                    </a>
-                    <a href="{{ route('app.campaign.world.index') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="ph ph-globe-hemisphere-west ph-icon"></i> World browser
-                    </a>
-                    <a href="{{ route('app.campaign.sessions.index') }}" class="btn btn-outline-secondary btn-sm">
-                        <i class="ph ph-clock-counter-clockwise ph-icon"></i> Sessions
-                    </a>
-                </div>
-                <p class="text-muted small mb-0">
-                    Work queue: GitHub issues on <code>Bmsandoval/worldkeep</code> · Agent rules in <code>AGENTS.md</code>
-                </p>
-            @else
-                <p class="mb-3">
-                    Session auth is wired. <a href="{{ route('app.login') }}">Log in</a> or
-                    <a href="{{ route('app.register') }}">sign up</a> to open the campaign dashboard.
-                </p>
-                <p class="text-muted small mb-0">
-                    MCP and REST share one Go engine; this UI calls it server-side on the same host in production.
-                </p>
-            @endauth
+    <section class="lp-hero">
+        <div class="lp-hero-inner">
+            <div class="lp-eyebrow">Tabletop RPG canon</div>
+            <h1 class="lp-headline">
+                Keep the world<br>
+                <span class="lp-accent">consistent</span>.
+            </h1>
+            <p class="lp-subheadline">
+                Campaign dashboard, canon approvals, world browser, and session history —
+                one place for GMs and AI agents to read and update shared lore.
+            </p>
+            <div class="lp-hero-actions">
+                <a href="{{ route('app.register') }}" class="lp-btn-primary">
+                    Get started
+                    <i class="ph ph-arrow-right"></i>
+                </a>
+                <a href="{{ route('app.login') }}" class="lp-btn-ghost">Log in</a>
+            </div>
         </div>
-    </div>
+    </section>
+
+    <section class="lp-features">
+        <div class="lp-features-inner">
+            <div class="lp-feature">
+                <div class="lp-feature-icon">
+                    <i class="ph ph-check-square"></i>
+                </div>
+                <h2>Canon approvals</h2>
+                <p>Review proposed world updates before they land. Commit or reject with reasons and conflict warnings.</p>
+            </div>
+            <div class="lp-feature">
+                <div class="lp-feature-icon">
+                    <i class="ph ph-globe-hemisphere-west"></i>
+                </div>
+                <h2>World browser</h2>
+                <p>Search entities, facts, and relationships. Browse NPCs, locations, factions, and plots from your campaign.</p>
+            </div>
+            <div class="lp-feature">
+                <div class="lp-feature-icon">
+                    <i class="ph ph-plugs-connected"></i>
+                </div>
+                <h2>MCP + REST</h2>
+                <p>Agents use MCP tools; apps use REST. Laravel UI and Go engine share one host in production.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="lp-cta-band">
+        <h2>Ready to run your campaign?</h2>
+        <a href="{{ route('app.register') }}" class="lp-btn-primary">
+            Sign in with Cognito
+            <i class="ph ph-arrow-right"></i>
+        </a>
+    </section>
+
+    <footer class="lp-footer">
+        <span>© 2026 WorldKeep</span>
+    </footer>
+
 @endsection

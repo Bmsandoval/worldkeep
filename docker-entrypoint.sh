@@ -28,10 +28,14 @@ cd /var/www/html
 
 if [ ! -f .env ]; then
   cp .env.example .env
+fi
+
+if [ -z "${APP_KEY:-}" ]; then
   php artisan key:generate --force --no-interaction
 fi
 
-mkdir -p database storage/framework/sessions storage/logs bootstrap/cache
+mkdir -p database storage/framework/views storage/framework/cache/data \
+  storage/framework/sessions storage/logs bootstrap/cache
 touch database/database.sqlite
 chown -R www-data:www-data storage bootstrap/cache database
 chmod -R 775 storage bootstrap/cache database

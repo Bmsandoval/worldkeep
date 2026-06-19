@@ -8,7 +8,8 @@ One running service hosts **Laravel UI**, **MCP**, and **REST API**. Go listens 
 Internet → :80 (Apache)
             ├─ /app/*           → Laravel (PHP)
             ├─ /mcp             → Go 127.0.0.1:8788
-            ├─ /api/*           → Go 127.0.0.1:8788
+            ├─ /api/v1/*        → Go 127.0.0.1:8788
+            ├─ /api/auth/*      → Laravel (Cognito)
             └─ /healthz         → Go 127.0.0.1:8788
 ```
 
@@ -57,16 +58,37 @@ docker run --rm -p 8080:80 \
 
 Laravel session/users live in `database/database.sqlite` inside the container unless you add a separate volume for `web/database/`.
 
-## AWS / Fargate (outline)
+## AWS / Fargate (hub-prod)
 
-Reuse the **single-container** pattern from `prototyper/infra/` PHP Fargate starters:
+WorldKeep runs as **`worldkeep.<domain>`** on the shared hub-prod ECS cluster (one container: Apache + Go + SQLite).
 
-1. Push `worldkeep:local` to ECR.
-2. One ECS task definition — port 80, no sidecar task.
-3. ALB health check → `/healthz` or Laravel `/health`.
-4. Optional: EFS or EBS for `/var/worldkeep/data` if SQLite must survive redeploys (Postgres migration is a later milestone).
+### One-time infra (maintainer)
 
-No second service is required for MCP.
+In `infra/prod.env` — `worldkeep` entry in `TF_VAR_php_services` with `"sqlite":true` and `"cognito":false`.
+
+```bash
+source infra/profile.sh
+protot plan prod service
+protot deploy prod service
+```
+
+### Deploy app
+
+```bash
+source infra/profile.sh
+infra/scripts/deploy-worldkeep.sh prod worldkeep-v1.8.0
+```
+
+| URL | Purpose |
+| --- | ------- |
+| `https://worldkeep.<domain>/app` | Web UI |
+| `https://worldkeep.<domain>/mcp` | ChatGPT MCP |
+| `https://worldkeep.<domain>/health` | ALB health |
+| `https://worldkeep.<domain>/healthz` | Go engine health |
+
+**Persistence:** campaign + Laravel SQLite live in the container filesystem. **Redeploys reset data** until EFS (or Postgres migration) is added.
+
+Spin down when idle: `protot spin-down prod worldkeep`
 
 ## Local dev (two ports)
 
