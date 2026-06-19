@@ -1,6 +1,6 @@
 # WorldKeep — Handoff
 
-_Last updated: 2026-06-18_
+_Last updated: 2026-06-18 (seat handoff → icebox)_
 
 **Starting point for a new session.** Read this first, then [AGENTS.md](./AGENTS.md) and the active GitHub issue.
 
@@ -40,11 +40,13 @@ The first version focuses exclusively on campaign memory and retrieval.
 
 ## Current development phase
 
-**Active phase: Post-MVP — Web UI + participant handoff** — see [docs/roadmap.md](./docs/roadmap.md)
+**Active phase: Post-MVP — Web UI complete through v1.3.0; next: Open5e + Phase 3 actors** — see [docs/roadmap.md](./docs/roadmap.md)
 
-POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
+POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Web UI ✅ v1.1.0–v1.3.0 · Playtest ✅ [docs/playtest-notes.md](./docs/playtest-notes.md)
 
-**Next recommended:** [#98](https://github.com/Bmsandoval/worldkeep/issues/98) seat management UI (v1.6.0), or Phase 3 `prepare_actor_context` MCP.
+**Next recommended:** [#101](https://github.com/Bmsandoval/worldkeep/issues/101) Open5e SRD integration (v1.7.0), or Phase 3 party actor MCP ([party-system.md](./docs/party-system.md)).
+
+**Icebox:** Human ↔ AI seat swapping (v1.4.0–v1.6.0) — [docs/icebox.md](./docs/icebox.md) · design [participant-handoff.md](./docs/participant-handoff.md)
 
 ---
 
@@ -52,15 +54,22 @@ POC ✅ v0.6.0 · MVP MCP ✅ v1.0.0 · Playtest ✅ [docs/playtest-notes.md](./
 
 | Milestone | Parent | Sub-issues | When (rough) |
 | --------- | ------ | ---------- | ------------ |
-| **v1.1.0** REST API | [#84](https://github.com/Bmsandoval/worldkeep/issues/84) | #82–#83 | ~1 release after v1.0.0 |
-| **v1.2.0** First browser UI | [#87](https://github.com/Bmsandoval/worldkeep/issues/87) | #85–#86 | ~1 release — **dashboard + approvals in browser** |
-| **v1.3.0** Browse + session UI | [#90](https://github.com/Bmsandoval/worldkeep/issues/90) | #88–#89 | ~1 release |
-| **v1.4.0** Campaign seats | [#93](https://github.com/Bmsandoval/worldkeep/issues/93) | #91–#92 | Seats schema + MCP |
-| **v1.5.0** Human ↔ AI handoff | [#97](https://github.com/Bmsandoval/worldkeep/issues/97) | #94–#96 | Friend joins / DM takeover / leave → AI |
-| **v1.6.0** Seat UI + invites | [#100](https://github.com/Bmsandoval/worldkeep/issues/100) | #98–#99 | Browser join/handoff |
-| **v1.7.0** Open5e + optional DDB | [#101](https://github.com/Bmsandoval/worldkeep/issues/101) | #102–#106 | **Open5e SRD tools (primary)**; optional DDB party/game-log |
+| **v1.1.0** REST API | [#84](https://github.com/Bmsandoval/worldkeep/issues/84) | #82–#83 | ✅ |
+| **v1.2.0** First browser UI | [#87](https://github.com/Bmsandoval/worldkeep/issues/87) | #85–#86 | ✅ |
+| **v1.3.0** Browse + session UI | [#90](https://github.com/Bmsandoval/worldkeep/issues/90) | #88–#89 | ✅ |
+| **v1.7.0** Open5e + optional DDB | [#101](https://github.com/Bmsandoval/worldkeep/issues/101) | #102–#106 | **Next** — Open5e SRD tools (primary); optional DDB party/game-log |
 
-Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/participant-handoff.md](./docs/participant-handoff.md) · [docs/open5e-integration.md](./docs/open5e-integration.md) · [docs/dndbeyond-integration.md](./docs/dndbeyond-integration.md) · [docs/owlbear-integration.md](./docs/owlbear-integration.md)
+Design: [docs/web-ui.md](./docs/web-ui.md) · [docs/open5e-integration.md](./docs/open5e-integration.md) · [docs/dndbeyond-integration.md](./docs/dndbeyond-integration.md) · [docs/owlbear-integration.md](./docs/owlbear-integration.md)
+
+### Icebox (do not schedule without re-promotion)
+
+| Milestone | Parent | Notes |
+| --------- | ------ | ----- |
+| **v1.4.0** Campaign seats | [#93](https://github.com/Bmsandoval/worldkeep/issues/93) | Prototype on `develop`; [icebox.md](./docs/icebox.md) |
+| **v1.5.0** Human ↔ AI handoff | [#97](https://github.com/Bmsandoval/worldkeep/issues/97) | Prototype on `develop` |
+| **v1.6.0** Seat UI + invites | [#100](https://github.com/Bmsandoval/worldkeep/issues/100) | Never started |
+
+Design (reference only): [docs/participant-handoff.md](./docs/participant-handoff.md)
 
 **Backlog (tactical maps):** [#107](https://github.com/Bmsandoval/worldkeep/issues/107) Owlbear integration
 
@@ -154,8 +163,7 @@ git pull origin develop
 | GitHub issues (v0.1.0–v0.6.0 POC queue) | ✅ implemented (#23–#44) |
 | Go store + SQLite + Blackport seed | ✅ `make seed` / `make test` |
 | MCP stdio server (Cursor) | ✅ `make mcp` |
-| Campaign seats (v1.4.0) | ✅ `list_campaign_seats`, `assign_seat_controller` — `make backfill-seats` on existing DBs |
-| Participant handoff (v1.5.0) | ✅ `handoff_seat`, `release_seat_to_ai`, `get_session_floor` — `make playtest-handoff` |
+| Campaign seats / handoff (v1.4–v1.5 prototype) | ⚪ **Icebox** — MCP exists on `develop`; not active direction — [docs/icebox.md](./docs/icebox.md) |
 | MCP HTTP + tunnel (ChatGPT) | ✅ `make serve` or Docker — `/mcp` proxied on same host as UI |
 | REST API (v1.1.0) | ✅ unified in `worldkeep-serve` — [docs/rest-api.md](./docs/rest-api.md) |
 | Laravel web UI (v1.2.0 WIP) | ✅ dashboard + approvals under `web/` — `make serve` |
@@ -210,7 +218,7 @@ Process: [docs/workflow/prototype-workflow.md](./docs/workflow/prototype-workflo
 
 ## Avoid premature features
 
-Do **not** build yet: ruleset engine, narrative optimization, living world simulation, faction/economy simulation, multi-agent systems. See [docs/roadmap.md](./docs/roadmap.md).
+Do **not** build yet: ruleset engine, narrative optimization, living world simulation, faction/economy simulation, multi-agent systems, **human ↔ AI seat handoff UI (v1.6)**. See [docs/roadmap.md](./docs/roadmap.md) and [docs/icebox.md](./docs/icebox.md).
 
 ---
 

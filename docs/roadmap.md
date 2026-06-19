@@ -104,24 +104,24 @@ web-ui.md
 
 ### Goal
 
-Minimal browser admin for dashboard, canon approval, world browse, and (later) seat management.
+Minimal browser admin for dashboard, canon approval, world browse, and session timeline. **Seat management UI is icebox** — see [icebox.md](./icebox.md).
 
 ### Delivers
 
-* REST API foundation (v1.1.0)
-* Dashboard + approval queue in browser (v1.2.0) — **first web UI**
-* World browser + session timeline (v1.3.0)
-* Seat invite/handoff UI (v1.6.0, after participant handoff MCP)
+* REST API foundation (v1.1.0) ✅
+* Dashboard + approval queue in browser (v1.2.0) ✅
+* World browser + session timeline (v1.3.0) ✅
+* ~~Seat invite/handoff UI (v1.6.0)~~ → **icebox** ([participant-handoff.md](./participant-handoff.md))
 
 ### Rough sequence (after v1.0.0)
 
 ```text
-v1.1.0  REST API        (~1 release)
-v1.2.0  Admin UI        (~1 release)  ← first browser milestone
-v1.3.0  Browse + session UI
-v1.4.0  Campaign seats  (MCP; see participant-handoff.md)
-v1.5.0  Handoff human↔AI
-v1.6.0  Seat UI + invites
+v1.1.0  REST API        ✅
+v1.2.0  Admin UI        ✅
+v1.3.0  Browse + session UI ✅
+v1.7.0  Open5e SRD tools (next)
+---
+icebox: v1.4.0 seats, v1.5.0 handoff, v1.6.0 seat UI
 ```
 
 ### Success Metric
@@ -161,9 +161,9 @@ Create persistent companions and AI-controlled party members.
 
 Companions remain recognizable and consistent after dozens of sessions.
 
-### Related: participant handoff
+### Related (icebox): participant handoff
 
-Human or AI may **control** each seat (DM or party member) and swap mid-campaign — see [participant-handoff.md](./participant-handoff.md) (v1.4.0–v1.6.0).
+Human ↔ AI seat swapping (v1.4.0–v1.6.0) is **deferred** — see [icebox.md](./icebox.md) and [participant-handoff.md](./participant-handoff.md). Phase 3 actor work does not depend on seat handoff.
 
 ---
 
@@ -293,7 +293,32 @@ Move to Active Roadmap after campaign intelligence is stable and widely used.
 
 # Icebox
 
-Interesting ideas that may never justify implementation.
+Interesting ideas that may never justify implementation — or are **paused** until core continuity + actors are proven.
+
+---
+
+## Campaign seats & participant handoff
+
+Document:
+
+```text
+participant-handoff.md
+icebox.md
+```
+
+### Why Icebox (2026-06-18)
+
+Multi-participant seat control (human joins as companion, DM takeover, release to AI) adds auth, invites, floor rules, and UI before party intelligence is stable. Prototype MCP/schema may remain on `develop` for reference; **do not extend** without explicit re-promotion.
+
+### Would deliver (if revived)
+
+* Campaign seats schema + MCP (v1.4.0 — prototype exists)
+* `handoff_seat` / session floor (v1.5.0 — prototype exists)
+* Browser invite/join/handoff UI (v1.6.0)
+
+### Promotion criteria
+
+Phase 3 actor MCP stable; playtest demand for human guests; invite/auth story agreed.
 
 ---
 
@@ -341,16 +366,14 @@ POC
 ↓
 MVP (MCP)
 ↓
-Web UI foundation + admin (Phase 2.5)
+Web UI foundation + admin (Phase 2.5) ✅ through v1.3.0
 ↓
-Campaign seats + handoff (v1.4–v1.5)
-↓
-Party Intelligence (actors)
+Open5e rules reference (v1.7) + Party Intelligence (actors)
 ↓
 Campaign Intelligence
 ```
 
-Phase 2.5 UI and v1.4–v1.5 seats can overlap with Phase 3 actor MCP work; seat **handoff** (v1.5) should follow actor profiles.
+Phase 3 actor MCP and v1.7 Open5e are the recommended next tracks. **Campaign seats + handoff (v1.4–v1.6) are icebox** — see [icebox.md](./icebox.md).
 
 These phases represent the core WorldKeeper vision.
 

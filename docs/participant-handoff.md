@@ -1,5 +1,7 @@
 # Campaign Seats & Participant Handoff
 
+> **Status: Icebox (2026-06-18)** — Human ↔ AI seat swapping is **not** active product direction. This document is retained as design reference. See [icebox.md](./icebox.md). Experimental MCP/schema code may remain on `develop` but should not be extended without re-promotion.
+
 ## 1. Problem
 
 Today WorldKeep assumes **one local operator** driving MCP (solo DM+player with AI narration). Real campaigns need:
@@ -148,15 +150,15 @@ Builds on MVP `set_campaign_role` / `WORLDKEEP_ROLE`:
 | **dm** (human seat) | Handoff player seats, not owner-only campaign delete |
 | **player** | Control assigned player seat only; no dm scope |
 
-## 7. Delivery milestones
+## 7. Delivery milestones (icebox — not scheduled)
 
-| Milestone | Delivers |
-| --------- | -------- |
-| **v1.4.0** | Seats schema, `list_campaign_seats`, `assign_seat_controller`, demo seats on Blackport |
-| **v1.5.0** | `handoff_seat`, floor state, `prepare_actor_context` integration, handoff playtest script |
-| **v1.6.0** | Web UI: invite link, pick seat, release to AI |
+| Milestone | Would deliver | Notes |
+| --------- | ------------- | ----- |
+| **v1.4.0** | Seats schema, `list_campaign_seats`, `assign_seat_controller`, demo seats on Blackport | Prototype merged; **frozen** |
+| **v1.5.0** | `handoff_seat`, floor state, `prepare_actor_context` integration, handoff playtest script | Prototype merged; **frozen** |
+| **v1.6.0** | Web UI: invite link, pick seat, release to AI | Never started; **icebox** |
 
-**Dependency:** companion/actor entities from Phase 3 MCP should land before or in parallel with v1.4; handoff without actor profiles is seat metadata only.
+**Dependency (if revived):** companion/actor entities from Phase 3 MCP should land before seat handoff is productized; handoff without actor profiles is seat metadata only.
 
 ## 8. Demo scenario (acceptance)
 

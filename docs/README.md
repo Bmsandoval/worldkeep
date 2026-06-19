@@ -26,8 +26,9 @@ These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026
 | [web-ui.md](./web-ui.md) | Browser UI delivery plan (Phase 2.5) |
 | [rest-api.md](./rest-api.md) | REST API routes (v1.1.0) |
 | [deploy.md](./deploy.md) | Unified Docker / single-service hosting |
-| [playtest-handoff.md](./playtest-handoff.md) | v1.5 seat handoff playtest |
-| [participant-handoff.md](./participant-handoff.md) | Human ↔ AI seat cycling |
+| [icebox.md](./icebox.md) | Deferred ideas (seat handoff v1.4–v1.6, narrative optimization) |
+| [playtest-handoff.md](./playtest-handoff.md) | Experimental v1.5 handoff playtest (icebox) |
+| [participant-handoff.md](./participant-handoff.md) | Seat/handoff design reference (icebox) |
 | [dndbeyond-integration.md](./dndbeyond-integration.md) | D&D Beyond MCP — characters, maps, optional sync |
 | [open5e-integration.md](./open5e-integration.md) | **Open5e API — primary SRD rules reference** |
 | [owlbear-integration.md](./owlbear-integration.md) | Owlbear VTT + extension — tactical maps (backlog) |

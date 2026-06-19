@@ -1,4 +1,6 @@
-# Handoff playtest — v1.5.0
+# Handoff playtest — v1.5.0 (experimental / icebox)
+
+> **Icebox:** Participant handoff is not active product direction. This script exercises **prototype** MCP on `develop` only — see [icebox.md](./icebox.md).
 
 Scenario from [participant-handoff.md](./participant-handoff.md) §8: solo AI table → friend joins companion → leaves back to AI.
 
@@ -36,4 +38,4 @@ Prerequisites: `make seed` or `make backfill-seats`, `make serve` or `make mcp`.
 | **Party beat** | `party_beat_queue` lists seat ids in order; `awaiting_player_checkpoint` pauses AI between beats |
 | **Open table** | Clients allow all human seats to interject; set floor manually as needed |
 
-Floor state is stored per open session in `session_floor`. v1.5 exposes read via `get_session_floor`; beat queue editing lands with seat UI in v1.6.
+Floor state is stored per open session in `session_floor`. v1.5 exposes read via `get_session_floor`; beat queue editing was planned for seat UI (v1.6, now **icebox**).
