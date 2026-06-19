@@ -26,6 +26,8 @@ These docs supersede the initial bootstrap planning (`docs/planning/`, June 2026
 | [web-ui.md](./web-ui.md) | Browser UI delivery plan (Phase 2.5) |
 | [rest-api.md](./rest-api.md) | REST API routes (v1.1.0) |
 | [deploy.md](./deploy.md) | Unified Docker / single-service hosting |
+| [chatgpt-app-listing.md](./chatgpt-app-listing.md) | **ChatGPT directory copy & public positioning** |
+| [chatgpt-mcp-setup.md](./chatgpt-mcp-setup.md) | ChatGPT MCP connector setup (tunnel / prod URL) |
 | [icebox.md](./icebox.md) | Deferred ideas (seat handoff v1.4–v1.6, narrative optimization) |
 | [playtest-handoff.md](./playtest-handoff.md) | Experimental v1.5 handoff playtest (icebox) |
 | [participant-handoff.md](./participant-handoff.md) | Seat/handoff design reference (icebox) |
