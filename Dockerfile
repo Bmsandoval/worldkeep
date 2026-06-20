@@ -42,6 +42,7 @@ RUN printf '%s\n' \
 COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-EXPOSE 80
+ARG APP_PORT=80
+EXPOSE ${APP_PORT}
 
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
